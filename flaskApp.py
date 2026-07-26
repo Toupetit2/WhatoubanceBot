@@ -1,12 +1,6 @@
 import os
-import json
-import requests
-import base64
-import asyncio
 from riot_link_handle_callback import handle_callback as riot_handle_callback
-from flask import Flask, request, render_template_string
-from tftAPI import get_tft_rank
-
+from flask import Flask, request
 
 class FlaskApp:
     def __init__(self, twitch_linker):
@@ -25,24 +19,6 @@ class FlaskApp:
         self.bot = twitch_linker.bot 
 
         self.register_routes()
-
-    # =========================
-    # DATA
-    # =========================
-
-    def load_data(self):
-        if not os.path.exists(self.DATA_FILE):
-            return {}
-
-        with open(self.DATA_FILE, "r", encoding="utf-8") as f:
-            try:
-                return json.load(f)
-            except:
-                return {}
-
-    def save_data(self, data):
-        with open(self.DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
 
     # =========================
     # ROUTES
