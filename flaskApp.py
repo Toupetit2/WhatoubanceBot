@@ -86,6 +86,14 @@ class FlaskApp:
 
             user_info = user_info_response.json()
             print(f"INFO - Riot user info: {user_info}", flush=True)
+
+            headers = {
+                "Authorization": f"Bearer {access_token}"
+            }
+            account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers)
+            account_info = account_info_response.json()
+            print(f"INFO - Riot account info: {account_info}", flush=True)
+            
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
         # -------- TWITCH CALLBACK --------
