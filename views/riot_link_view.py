@@ -36,5 +36,5 @@ class RiotLinkView(discord.ui.View):
 
         redirect_uri = 'https://club.whatoubance.fr/oauth/callback'
         auth_url = f"https://auth.riotgames.com/authorize?client_id={RSO_CLIENT_ID}&redirect_uri={redirect_uri}&response_type=code&scope=openid&state={discord_id}&ui_locales=fr-FR"
-        await interaction.response.send_message( f"👉 Clique ici pour lier ton Riot : {auth_url}",view=VerifyRiotView(self.discordAPI), ephemeral=True ) 
+        await interaction.response.send_message( f"👉 [Clique ici pour lier ton Riot]({auth_url})",view=VerifyRiotView(self.discordAPI), ephemeral=True ) 
 
