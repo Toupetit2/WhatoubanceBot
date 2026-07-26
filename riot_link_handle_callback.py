@@ -67,7 +67,7 @@ def handle_callback(discordAPI, bot, code, state):
         try:
             future.result(timeout=10)  # attend le résultat (ou lève l'exception)
         except Exception as e:
-            print(f"Erreur give_role: {e}", flush=True)
+            return f"Erreur give_role: {e}"
         
         guild_id = int(data["guild_id"])
         member = bot.get_guild(guild_id).get_member(int(state))
