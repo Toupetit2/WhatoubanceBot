@@ -45,3 +45,4 @@ class DiscordAPI:
             if member and role:
                 await member.add_roles(role)
 
+        print(f"Debug - Given role {role_id} to user {user_id} in guild {guild_id}", flush=True)
