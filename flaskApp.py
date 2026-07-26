@@ -20,6 +20,8 @@ class FlaskApp:
         self.twitch_linker = twitch_linker
         self.discordAPI = twitch_linker.discordAPI
 
+        self.bot = twitch_linker.bot 
+
         self.register_routes()
 
     # =========================
@@ -108,7 +110,7 @@ class FlaskApp:
             
             #give role based on rank
             if tft_rank:
-                self.discordAPI.give_role(data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])
+                self.discordAPI.give_role(self.bot, data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"]) 
 
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
