@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import base64
+import asyncio
 from flask import Flask, request, render_template_string
 from tftAPI import get_tft_rank
 
@@ -110,7 +111,7 @@ class FlaskApp:
             
             #give role based on rank
             if tft_rank:
-                self.discordAPI.give_role(self.bot, data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"]) 
+                asyncio.create_task(self.discordAPI.give_role(self.bot, data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])) 
 
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
