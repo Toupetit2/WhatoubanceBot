@@ -111,7 +111,13 @@ class FlaskApp:
             
             #give role based on rank
             if tft_rank:
-                asyncio.create_task(self.discordAPI.give_role(self.bot, data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])) 
+                coro = self.discordAPI.give_role(self.bot, data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])
+                future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
+
+                try:
+                    future.result(timeout=10)  # attend le résultat (ou lève l'exception)
+                except Exception as e:
+                    print(f"Erreur give_role: {e}", flush=True)
 
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
