@@ -118,6 +118,20 @@ class FlaskApp:
                     future.result(timeout=10)  # attend le résultat (ou lève l'exception)
                 except Exception as e:
                     print(f"Erreur give_role: {e}", flush=True)
+                for role in ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]:
+                    if role != tft_rank:
+                        other_role_id = data.get(f"tft_rank_{role}_role_id")
+                        if other_role_id:
+                            coro = self.discordAPI.remove_role(
+                                self.bot, int(data["guild_id"]), int(state), int(other_role_id)
+                            )
+                            future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
+
+                            try:
+                                future.result(timeout=10)
+                            except Exception as e:
+                                print(f"Erreur remove_role ({role}): {e}", flush=True)
+
 
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 

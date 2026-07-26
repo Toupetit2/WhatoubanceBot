@@ -45,4 +45,16 @@ class DiscordAPI:
             if member and role:
                 await member.add_roles(role)
 
-        print(f"Debug - Given role {role_id} to user {user_id} in guild {guild_id}", flush=True)
+    async def remove_role(self, bot, guild_id, user_id, role_id):
+        # guild_id -> int, the id of the guild where the role is
+        # user_id -> int, the id of the user to remove the role from
+        # role_id -> int, the id of the role to remove
+
+        guild = bot.get_guild(guild_id)
+
+        if guild:
+            member = guild.get_member(user_id)
+            role = guild.get_role(role_id)
+
+            if member and role:
+                await member.remove_roles(role)
