@@ -16,7 +16,6 @@ class RiotLinkView(discord.ui.View):
     
     @discord.ui.button(label="🔗 Lier mon Riot", style=discord.ButtonStyle.blurple, custom_id="riot_link_button") 
     async def link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
-        print("=== BOUTON CLIQUÉ ===", flush=True)
         discord_id = str(interaction.user.id) 
 
         redirect_uri = 'https://bot.whatoubance.fr/oauth/callback'

@@ -5,6 +5,7 @@ import time
 import utils.jsonStorage
 import antiSpam
 from views.riot_link_view import RiotLinkView
+from views.twitch_link_views import TwitchLinkView
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -20,6 +21,7 @@ class Bot(commands.Bot):
         self.link_view_manager = None
         self.anti_spam = antiSpam.AntiSpam()
         self.discordAPI = None
+        self.twitch_linker = None
 
 
     async def setup_hook(self):
@@ -39,10 +41,9 @@ class Bot(commands.Bot):
             self.background_task = asyncio.create_task(self.stream_check_loop())
             print("INFO - Background task for stream checking started.", flush=True)
 
-        print("=== ON_READY DÉCLENCHÉ ===", flush=True)
         self.add_view(RiotLinkView(self.discordAPI))
-        print("=== VIEW ENREGISTRÉE ===", flush=True)
-            
+        self.add_view(TwitchLinkView(self.twitch_linker, self.discordAPI))
+
     
     async def on_message(self, message):
         if message.author.bot:

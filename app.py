@@ -32,6 +32,7 @@ twitch_link_view_manager = TwitchLinkViewManager(bot, twitch_linker, discord_api
     
 bot.twitch_bot = twitch_bot
 bot.discordAPI = discord_api
+bot.twitch_linker = twitch_linker
 
 async def main():
     setup_notif_stream(bot, twitch_bot)

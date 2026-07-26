@@ -13,23 +13,3 @@ class TwitchLinkView(discord.ui.View):
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
         await interaction.response.send_message( f"👉 Clique ici pour lier ton Twitch :\n{auth_url}", ephemeral=True ) 
-
-class TwitchLinkViewManager: 
-    
-    def __init__(self, bot, twitch_linker, discordAPI): 
-        self.bot = bot 
-        self.twitch_linker = twitch_linker 
-        self.discordAPI = discordAPI 
-    
-    async def init(self): 
-        with open("data.json", "r") as f: 
-            data = json.load(f) 
-        
-        if "twitch_link_panel" in data: 
-            message_id = data["twitch_link_panel"]["message_id"] 
-            channel_id = data["twitch_link_panel"]["channel_id"] 
-            channel = self.bot.get_channel(channel_id) 
-            
-            if channel: 
-                if channel.fetch_message(message_id): 
-                    self.bot.add_view(TwitchLinkView(self.twitch_linker, self.discordAPI))
