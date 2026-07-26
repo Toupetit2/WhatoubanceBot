@@ -109,7 +109,6 @@ class FlaskApp:
             #give role based on rank
             if tft_rank:
                 self.discordAPI.give_role(data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])
-            self.discordAPI.give_role(data["tft_rank_" + tft_rank + "_role_id"], state)
 
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
