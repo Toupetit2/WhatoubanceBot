@@ -79,6 +79,9 @@ class FlaskApp:
 
             token_data = token_response.json()
 
+
+            print("CLIENT ID:", self.CLIENT_ID, flush=True)
+            print("SECRET LENGTH:", len(self.CLIENT_SECRET), flush=True)
             print("TOKEN DATA:", token_data, flush=True)
 
             if "access_token" not in token_data:
