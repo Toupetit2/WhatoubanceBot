@@ -48,7 +48,7 @@ def handle_callback(discordAPI, bot, code, state):
     print(f"DEBUG - Fetching Riot account info", flush=True)
     account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers, timeout=10)
     account_info = account_info_response.json()
-
+    print(f"INFO - Riot account info: {account_info}, response={account_info_response.status_code}", flush=True)
     tft_rank = tftAPI.get_tft_rank(account_info.get("puuid"), user_info.get("cpid"))
 
     data = utils.jsonStorage.load_data()
