@@ -3,6 +3,7 @@ import json
 import requests
 import base64
 from flask import Flask, request, render_template_string
+from tftAPI import get_tft_rank
 
 
 class FlaskApp:
@@ -17,6 +18,7 @@ class FlaskApp:
         self.RSO_CLIENT_SECRET = os.getenv("RSO_CLIENT_SECRET")
 
         self.twitch_linker = twitch_linker
+        self.discordAPI = twitch_linker.discordAPI
 
         self.register_routes()
 
@@ -92,8 +94,23 @@ class FlaskApp:
             }
             account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers)
             account_info = account_info_response.json()
-            print(f"INFO - Riot account info: {account_info}", flush=True)
+
+            tft_rank = get_tft_rank(account_info.get("puuid"))
+
+            data = self.load_data()
+            data["riot_links"][str(state)] = {
+                "riot_id": account_info.get("puuid"),
+                "riot_name": user_info.get("name"),
+                "riot_tag": user_info.get("tag_line"),
+                "tft_rank": tft_rank
+            }
+            self.save_data(data)
             
+            #give role based on rank
+            if tft_rank:
+                self.discordAPI.give_role(data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])
+            self.discordAPI.give_role(data["tft_rank_" + tft_rank + "_role_id"], state)
+
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
         # -------- TWITCH CALLBACK --------
