@@ -3,6 +3,7 @@ import json
 import requests
 import base64
 import asyncio
+from riot_link_handle_callback import handle_callback as riot_handle_callback
 from flask import Flask, request, render_template_string
 from tftAPI import get_tft_rank
 
@@ -14,7 +15,7 @@ class FlaskApp:
         self.DATA_FILE = "data.json"
         self.CLIENT_ID = os.getenv("CLIENT_ID")
         self.CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-        self.REDIRECT_URI = "https://bot.whatoubance.fr/oauth/callback"
+        self.REDIRECT_URI =  os.getenv("REDIRECT_URI")
         self.RSO_CLIENT_ID = os.getenv("RSO_CLIENT_ID")
         self.RSO_CLIENT_SECRET = os.getenv("RSO_CLIENT_SECRET")
 
@@ -60,89 +61,10 @@ class FlaskApp:
             if not code:
                 return "Erreur : code manquant", 400
             
-            basic = base64.b64encode(f"{self.RSO_CLIENT_ID}:{self.RSO_CLIENT_SECRET}".encode()).decode()
-
-            headers = {
-                "Authorization": f"Basic {basic}",
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-            
-            data = {
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": self.REDIRECT_URI
-                }
-        
-            token_response = requests.post("https://auth.riotgames.com/token", headers=headers, data=data)
-
-            token_data = token_response.json()
-
-            if "access_token" not in token_data:
-                return "Erreur lors de l'authentification Riot.", 400
-            
-            access_token = token_data["access_token"]
-
-            user_info_response = requests.get(
-                "https://auth.riotgames.com/userinfo",
-                headers={
-                    "Authorization": f"Bearer {access_token}"
-                }
-            )
-
-            user_info = user_info_response.json()
-            print(f"INFO - Riot user info: {user_info}", flush=True)
-
-            headers = {
-                "Authorization": f"Bearer {access_token}"
-            }
-            account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers)
-            account_info = account_info_response.json()
-
-            tft_rank = get_tft_rank(account_info.get("puuid"), user_info.get("cpid"))
-
-            data = self.load_data()
-            data["riot_links"][str(state)] = {
-                "riot_id": account_info.get("puuid"),
-                "riot_name": user_info.get("name"),
-                "riot_tag": user_info.get("tag_line"),
-                "tft_rank": tft_rank
-            }
-            self.save_data(data)
-            
-            #give role based on rank
-            if tft_rank:
-                coro = self.discordAPI.give_role(self.bot, int(data["guild_id"]), int(state), int(data["tft_rank_" + tft_rank + "_role_id"]))
-                future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
-
-                try:
-                    future.result(timeout=10)  # attend le résultat (ou lève l'exception)
-                except Exception as e:
-                    print(f"Erreur give_role: {e}", flush=True)
-                
-                guild_id = int(data["guild_id"])
-                member = self.bot.get_guild(guild_id).get_member(int(state))
-                current_role_ids = {r.id for r in member.roles} if member else set()
-
-                for role in ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]:
-                    if role != tft_rank:
-                        other_role_id = data.get(f"tft_rank_{role}_role_id")
-                        if other_role_id and int(other_role_id) in current_role_ids:
-                            coro = self.discordAPI.remove_role(
-                                self.bot, guild_id, int(state), int(other_role_id)
-                            )
-                            future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
-
-                            def _on_done(f, role=role):
-                                if f.exception():
-                                    print(f"Erreur remove_role ({role}): {f.exception()}", flush=True)
-
-                            future.add_done_callback(_on_done)
-
-
-            return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
+            return riot_handle_callback(self.discordAPI, self.bot, code, state)
 
         # -------- TWITCH CALLBACK --------
-        @self.app.route("/auth/twitch/callback")
+        @self.app.route("/oauth/twitch/callback")
         def twitch_callback():
             code = request.args.get("code")
             state = request.args.get("state")
@@ -154,5 +76,4 @@ class FlaskApp:
     # =========================
 
     def run(self):
-        print("🔥 Flask running on http://localhost:3000")
-        self.app.run(debug=True,use_reloader=False, port=3000)
+        self.app.run(use_reloader=False, port=3000)

@@ -4,13 +4,14 @@ from flask import Flask, request, render_template_string
 import requests
 from discordAPI import DiscordAPI
 import json
+import asyncio
 
 dotenv.load_dotenv()
 dotenv_file = dotenv.find_dotenv()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-REDIRECT_URI = "http://localhost:3000/auth/twitch/callback"
+REDIRECT_URI = "https://bot.whatoubance.fr/oauth/twitch/callback"
 
 
 class PendingLinks:
@@ -90,14 +91,17 @@ class TwitchLinker:
         ).json()
 
         user = user_res["data"][0]
-        self.pending_links.set(state, user["display_name"])
 
         data = load_data()
 
         if is_wtb(user["display_name"]):
-            data["temp_linked_accounts"] = data.get("temp_linked_accounts", {})
-            data["temp_linked_accounts"][state] = user["display_name"]
-            save_data(data)
+            coro = self.discordAPI.give_role(self.bot, int(data["guild_id"]), int(state), data["wtb_twitch_role_id"])
+            future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
+        
+            try:
+                future.result(timeout=10)  # attend le résultat (ou lève l'exception)
+            except Exception as e:
+                print(f"Erreur give_role: {e}", flush=True)
 
         return """
         <h1>✅ Compte Twitch lié avec succès !</h1>
