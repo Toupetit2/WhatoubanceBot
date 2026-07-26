@@ -32,9 +32,8 @@ class RiotLinkView(discord.ui.View):
     @discord.ui.button(label="🔗 Lier mon Riot", style=discord.ButtonStyle.blurple, custom_id="riot_link_button") 
     async def link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
-        #auth_url = f"http://localhost:3000/auth/riot?discord_id={discord_id}"
 
-        redirect_uri = 'https://club.whatoubance.fr/oauth/callback'
+        redirect_uri = 'https://bot.whatoubance.fr/oauth/callback'
         auth_url = f"https://auth.riotgames.com/authorize?client_id={RSO_CLIENT_ID}&redirect_uri={redirect_uri}&response_type=code&scope=openid&state={discord_id}&ui_locales=fr-FR"
         await interaction.response.send_message( f"👉 [Clique ici pour lier ton Riot]({auth_url})",view=VerifyRiotView(self.discordAPI), ephemeral=True ) 
 

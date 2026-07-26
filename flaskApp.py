@@ -12,7 +12,7 @@ class FlaskApp:
         self.DATA_FILE = "data.json"
         self.CLIENT_ID = os.getenv("CLIENT_ID")
         self.CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-        self.REDIRECT_URI = "https://club.whatoubance.fr/oauth/callback"
+        self.REDIRECT_URI = "https://bot.whatoubance.fr/oauth/callback"
         self.RSO_CLIENT_ID = os.getenv("RSO_CLIENT_ID")
         self.RSO_CLIENT_SECRET = os.getenv("RSO_CLIENT_SECRET")
 
