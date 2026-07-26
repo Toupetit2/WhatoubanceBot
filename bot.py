@@ -39,7 +39,9 @@ class Bot(commands.Bot):
             self.background_task = asyncio.create_task(self.stream_check_loop())
             print("INFO - Background task for stream checking started.", flush=True)
 
+        print("=== ON_READY DÉCLENCHÉ ===", flush=True)
         self.add_view(RiotLinkView(self.discordAPI))
+        print("=== VIEW ENREGISTRÉE ===", flush=True)
             
     
     async def on_message(self, message):
