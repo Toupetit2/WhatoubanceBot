@@ -70,6 +70,10 @@ class FlaskApp:
 
             token_data = token_response.json()
 
+            print(f"DEBUG - status: {token_response.status_code}")
+            print(f"DEBUG - token_data: {token_data}")
+
+
             if "access_token" not in token_data:
                 return "Erreur lors de l'authentification Riot.", 400
             
