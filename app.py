@@ -5,7 +5,7 @@ import asyncio
 
 from discordAPI import DiscordAPI
 from twitchBot import TwitchBot
-from twitchVerify import TwitchLinker, TwitchLinkerApp
+from twitchVerify import TwitchLinker
 from twitchLinkButton import TwitchLinkViewManager
 from bot import Bot
 from commands.notif_stream import setup as setup_notif_stream
