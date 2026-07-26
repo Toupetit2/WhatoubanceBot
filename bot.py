@@ -19,6 +19,7 @@ class Bot(commands.Bot):
         self.twitch_bot = None
         self.link_view_manager = None
         self.anti_spam = antiSpam.AntiSpam()
+        self.discordAPI = None
 
 
     async def setup_hook(self):
