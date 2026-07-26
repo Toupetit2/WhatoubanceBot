@@ -95,7 +95,7 @@ class FlaskApp:
             account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers)
             account_info = account_info_response.json()
 
-            tft_rank = get_tft_rank(account_info.get("puuid"))
+            tft_rank = get_tft_rank(account_info.get("puuid"), account_info.get("cpid"))
 
             data = self.load_data()
             data["riot_links"][str(state)] = {
