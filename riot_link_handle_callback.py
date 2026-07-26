@@ -22,7 +22,7 @@ def handle_callback(discordAPI, bot, code, state):
         "code": code,
         "redirect_uri": REDIRECT_URI
         }
-
+    print(f"INFO - Riot callback received: code={code}, state={state}", flush=True)
     token_response = requests.post("https://auth.riotgames.com/token", headers=headers, data=data, timeout=10)
 
     token_data = token_response.json()
@@ -45,6 +45,7 @@ def handle_callback(discordAPI, bot, code, state):
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
+    print(f"DEBUG - Fetching Riot account info", flush=True)
     account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers, timeout=10)
     account_info = account_info_response.json()
 
@@ -58,7 +59,7 @@ def handle_callback(discordAPI, bot, code, state):
         "tft_rank": tft_rank
     }
     utils.jsonStorage.save_data(data)
-    
+    print(f"INFO - Riot account info saved for user {state}", flush=True)
     #give role based on rank
     if tft_rank:
         coro = discordAPI.give_role(bot, int(data["guild_id"]), int(state), int(data["tft_rank_" + tft_rank + "_role_id"]))
