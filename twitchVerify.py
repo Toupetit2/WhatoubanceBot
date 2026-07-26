@@ -13,21 +13,6 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = "https://bot.whatoubance.fr/oauth/twitch/callback"
 
-
-class PendingLinks:
-    def __init__(self):
-        self.links = {}
-
-    def set(self, state, display_name):
-        self.links[state] = display_name
-
-    def get(self, state):
-        return self.links.get(state)
-
-    def pop(self, state):
-        return self.links.pop(state, None)
-
-
 def is_wtb(display_name):
     return display_name.lower().startswith("wtb")
 
@@ -50,7 +35,6 @@ def save_data(data):
 
 class TwitchLinker:
     def __init__(self, bot):
-        self.pending_links = PendingLinks()
         self.bot = bot
         self.discordAPI = DiscordAPI()
 
@@ -110,85 +94,3 @@ class TwitchLinker:
 
     def get_pending_link(self, state):
         return self.pending_links.get(state)
-
-
-class TwitchLinkerApp:
-    def __init__(self, twitch_linker):
-        self.twitch_linker = twitch_linker
-        self.app = Flask(__name__)
-        self._register_routes()
-
-    def _register_routes(self):
-        @self.app.route("/callback")
-        def callback():
-            code = request.args.get("code")
-            state = request.args.get("state")
-            return self.twitch_linker.handle_callback(code, state)
-
-        @self.app.route("/riot-link", methods=["GET", "POST"])
-        def riot_link():
-            discord_id = request.args.get("discord_id") or request.form.get("discord_id")
-
-            if not discord_id:
-                return "discord_id manquant"
-
-            if request.method == "POST":
-                game_name = request.form.get("game_name", "").strip()
-                tag_line = request.form.get("tag_line", "").strip()
-                tft_rank = request.form.get("tft_rank", "").strip().upper()
-
-                if not game_name or not tag_line:
-                    return "Game Name ou Tag Line manquant"
-
-                riot_id = f"{game_name}#{tag_line}"
-                puuid = f"fake_{discord_id}"
-
-                data = load_data()
-                data["riot_links"] = data.get("riot_links", {})
-                data["riot_links"][str(discord_id)] = {
-                    "riot_id": riot_id,
-                    "puuid": puuid,
-                    "tft_rank": tft_rank
-                }
-                save_data(data)
-
-                return f"""
-                <h1>✅ Compte Riot lié avec succès !</h1>
-                <p>Discord ID : {discord_id}</p>
-                <p>Riot ID : {riot_id}</p>
-                <p>Rang TFT : {tft_rank}</p>
-                <p>Tu peux retourner sur Discord.</p>
-                """
-
-            return render_template_string("""
-                <h1>Connecter Riot</h1>
-                <form method="POST">
-                    <input type="hidden" name="discord_id" value="{{ discord_id }}">
-
-                    <p>Game Name :</p>
-                    <input type="text" name="game_name" required>
-
-                    <p>Tag Line :</p>
-                    <input type="text" name="tag_line" required>
-
-                    <p>Rang TFT :</p>
-                    <select name="tft_rank">
-                        <option>IRON</option>
-                        <option>BRONZE</option>
-                        <option>SILVER</option>
-                        <option>GOLD</option>
-                        <option>PLATINUM</option>
-                        <option>EMERALD</option>
-                        <option>DIAMOND</option>
-                        <option>MASTER</option>
-                        <option>GRANDMASTER</option>
-                        <option>CHALLENGER</option>
-                    </select>
-
-                    <br><br>
-                    <button type="submit">Valider</button>
-                </form>
-            """, discord_id=discord_id)
-
-    def run(self, port=3000):
-        self.app.run(port=port)
