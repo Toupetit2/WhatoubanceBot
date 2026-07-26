@@ -11,9 +11,9 @@ def get_tft_rank(puuid, cpid):
     }
 
     url = f"https://{region}.api.riotgames.com/tft/league/v1/by-puuid/{puuid}"
-
+    print(f"DEBUG - request riot api", flush=True)
     response = requests.get(url, headers=headers)
-    print(f"DEBUG - Riot API response for puuid {puuid} in region {region}: {response.status_code}", flush=True)
+    print(f"DEBUG - Riot response code: {response.status_code}", flush=True)
     if response.status_code == 200:
         print(f"DEBUG - 200 code", flush=True)
         data = response.json()
