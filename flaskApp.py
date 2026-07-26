@@ -53,7 +53,6 @@ class FlaskApp:
             state = request.args.get("state") #discord_id
 
             if not code:
-                print("ERROR: Missing code in Riot callback")
                 return "Erreur : code manquant", 400
             
             basic = base64.b64encode(f"{self.RSO_CLIENT_ID}:{self.RSO_CLIENT_SECRET}".encode()).decode()
@@ -71,9 +70,6 @@ class FlaskApp:
         
             token_response = requests.post("https://auth.riotgames.com/token", headers=headers, data=data)
 
-            print("TOKEN STATUS:", token_response.status_code, flush=True)
-            print("TOKEN RESPONSE:", token_response.text, flush=True)
-
             token_data = token_response.json()
 
             if "access_token" not in token_data:
@@ -89,7 +85,7 @@ class FlaskApp:
             )
 
             user_info = user_info_response.json()
-            print(f"INFO - Riot user info: {user_info}")
+            print(f"INFO - Riot user info: {user_info}", flush=True)
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
 
         # -------- TWITCH CALLBACK --------
