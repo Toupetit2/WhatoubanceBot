@@ -111,7 +111,7 @@ class FlaskApp:
             
             #give role based on rank
             if tft_rank:
-                coro = self.discordAPI.give_role(self.bot, data["guild_id"], state, data["tft_rank_" + tft_rank + "_role_id"])
+                coro = self.discordAPI.give_role(self.bot, int(data["guild_id"]), int(state), int(data["tft_rank_" + tft_rank + "_role_id"]))
                 future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
 
                 try:
