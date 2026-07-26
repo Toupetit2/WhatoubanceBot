@@ -132,10 +132,11 @@ class FlaskApp:
                             )
                             future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
 
-                            try:
-                                future.result(timeout=10)
-                            except Exception as e:
-                                print(f"Erreur remove_role ({role}): {e}", flush=True)
+                            def _on_done(f, role=role):
+                                if f.exception():
+                                    print(f"Erreur remove_role ({role}): {f.exception()}", flush=True)
+
+                            future.add_done_callback(_on_done)
 
 
             return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200
