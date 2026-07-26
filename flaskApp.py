@@ -51,6 +51,7 @@ class FlaskApp:
             state = request.args.get("state") #discord_id
 
             if not code:
+                print("ERROR: Missing code in Riot callback")
                 return "Erreur : code manquant", 400
             
             basic = base64.b64encode(f"{self.CLIENT_ID}:{self.CLIENT_SECRET}".encode()).decode()
