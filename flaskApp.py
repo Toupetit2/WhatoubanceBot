@@ -74,11 +74,10 @@ class FlaskApp:
         
             token_response = requests.post("https://auth.riotgames.com/token", headers=headers, data=data)
 
+            print("TOKEN STATUS:", token_response.status_code, flush=True)
+            print("TOKEN RESPONSE:", token_response.text, flush=True)
+
             token_data = token_response.json()
-
-            print(f"DEBUG - status: {token_response.status_code}")
-            print(f"DEBUG - token_data: {token_data}")
-
 
             if "access_token" not in token_data:
                 return "Erreur lors de l'authentification Riot.", 400
