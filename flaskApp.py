@@ -47,8 +47,13 @@ class FlaskApp:
         # -------- RIOT LINK --------
         @self.app.route("/oauth/callback")
         def riot_link():
+            print("=== RIOT CALLBACK RECEIVED ===", flush=True)
+
             code = request.args.get("code")
             state = request.args.get("state") #discord_id
+
+            print("CODE:", code, flush=True)
+            print("STATE:", state, flush=True)
 
             if not code:
                 print("ERROR: Missing code in Riot callback")
