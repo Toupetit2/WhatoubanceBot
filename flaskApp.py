@@ -52,4 +52,4 @@ class FlaskApp:
     # =========================
 
     def run(self):
-        self.app.run(debug=True, use_reloader=False, port=3000)
+        self.app.run(use_reloader=False, port=3000)

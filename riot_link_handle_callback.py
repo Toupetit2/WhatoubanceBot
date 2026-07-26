@@ -23,7 +23,7 @@ def handle_callback(discordAPI, bot, code, state):
         "redirect_uri": REDIRECT_URI
         }
 
-    token_response = requests.post("https://auth.riotgames.com/token", headers=headers, data=data)
+    token_response = requests.post("https://auth.riotgames.com/token", headers=headers, data=data, timeout=10)
 
     token_data = token_response.json()
 
@@ -45,7 +45,7 @@ def handle_callback(discordAPI, bot, code, state):
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
-    account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers)
+    account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers, timeout=10)
     account_info = account_info_response.json()
 
     tft_rank = tftAPI.get_tft_rank(account_info.get("puuid"), user_info.get("cpid"))
