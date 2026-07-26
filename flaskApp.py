@@ -118,12 +118,17 @@ class FlaskApp:
                     future.result(timeout=10)  # attend le résultat (ou lève l'exception)
                 except Exception as e:
                     print(f"Erreur give_role: {e}", flush=True)
+                
+                guild_id = int(data["guild_id"])
+                member = self.bot.get_guild(guild_id).get_member(int(state))
+                current_role_ids = {r.id for r in member.roles} if member else set()
+
                 for role in ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]:
                     if role != tft_rank:
                         other_role_id = data.get(f"tft_rank_{role}_role_id")
-                        if other_role_id:
+                        if other_role_id and int(other_role_id) in current_role_ids:
                             coro = self.discordAPI.remove_role(
-                                self.bot, int(data["guild_id"]), int(state), int(other_role_id)
+                                self.bot, guild_id, int(state), int(other_role_id)
                             )
                             future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
 
