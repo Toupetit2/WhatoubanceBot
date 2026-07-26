@@ -52,14 +52,11 @@ class FlaskApp:
             code = request.args.get("code")
             state = request.args.get("state") #discord_id
 
-            print("CODE:", code, flush=True)
-            print("STATE:", state, flush=True)
-
             if not code:
                 print("ERROR: Missing code in Riot callback")
                 return "Erreur : code manquant", 400
             
-            basic = base64.b64encode(f"{self.CLIENT_ID}:{self.CLIENT_SECRET}".encode()).decode()
+            basic = base64.b64encode(f"{self.RSO_CLIENT_ID}:{self.RSO_CLIENT_SECRET}".encode()).decode()
 
             headers = {
                 "Authorization": f"Basic {basic}",
@@ -78,11 +75,6 @@ class FlaskApp:
             print("TOKEN RESPONSE:", token_response.text, flush=True)
 
             token_data = token_response.json()
-
-
-            print("CLIENT ID:", self.CLIENT_ID, flush=True)
-            print("SECRET LENGTH:", len(self.CLIENT_SECRET), flush=True)
-            print("TOKEN DATA:", token_data, flush=True)
 
             if "access_token" not in token_data:
                 return "Erreur lors de l'authentification Riot.", 400
