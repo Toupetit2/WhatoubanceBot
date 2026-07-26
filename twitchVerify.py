@@ -1,6 +1,5 @@
 import dotenv
 import os
-from flask import Flask, request, render_template_string
 import requests
 from discordAPI import DiscordAPI
 import json
@@ -91,6 +90,3 @@ class TwitchLinker:
         <h1>✅ Compte Twitch lié avec succès !</h1>
         <p>Tu peux retourner sur Discord.</p>
         """
-
-    def get_pending_link(self, state):
-        return self.pending_links.get(state)
