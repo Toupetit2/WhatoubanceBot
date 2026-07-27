@@ -29,30 +29,51 @@ class RenameModal(discord.ui.Modal, title="Renommer le salon"):
                 ephemeral=True,
             )
 
-class LimitSelect(discord.ui.Select):
+class LimitModal(discord.ui.Modal, title="Limiter le salon"):
+    new_limit = discord.ui.TextInput(
+        label="Nouvelle limite (0 = illimité)",
+        style=discord.TextStyle.short,
+        max_length=3,
+        required=True,
+    )
+
     def __init__(self, channel: discord.VoiceChannel):
+        super().__init__()
         self.channel = channel
-        options = [
-            discord.SelectOption(label="Illimité", value="0"),
-            discord.SelectOption(label="2 personnes", value="2"),
-            discord.SelectOption(label="5 personnes", value="5"),
-            discord.SelectOption(label="10 personnes", value="10"),
-        ]
-        super().__init__(placeholder="Choisis une limite", options=options)
 
-    async def callback(self, interaction: discord.Interaction):
-        limit = int(self.values[0])
-        await self.channel.edit(user_limit=limit)
-        await interaction.response.edit_message(
-            content=f"Limite mise à jour : {'illimitée' if limit == 0 else limit}",
-            view=None,
-        )
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
 
+
+        try:
+            limit = int(self.new_limit.value)
+        except ValueError:
+            await interaction.followup.send(
+                "Merci d'entrer un nombre valide.", ephemeral=True
+            )
+            return
+
+        if not (0 <= limit <= 99):
+            await interaction.followup.send(
+                "La limite doit être comprise entre 0 (illimité) et 99.", ephemeral=True
+            )
+            return
+
+        try:
+            await self.channel.edit(user_limit=limit)
+            texte_limite = "illimitée" if limit == 0 else f"{limit} personnes"
+            await interaction.followup.send(
+                f"Salon limité à **{texte_limite}**.", ephemeral=True
+            )
+        except discord.HTTPException as e:
+            await interaction.followup.send(
+                f"Erreur lors de la modification : {e}", ephemeral=True
+            )
 
 class LimitView(discord.ui.View):
     def __init__(self, channel: discord.VoiceChannel):
         super().__init__(timeout=60)
-        self.add_item(LimitSelect(channel))
+        self.add_item(LimitModal(channel))
 
 
 class ControlPanel(discord.ui.View):
