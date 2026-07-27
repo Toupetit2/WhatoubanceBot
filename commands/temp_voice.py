@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import utils.jsonStorage as utils
+import views.temp_voice_panel
 
 
 class TempVoice(commands.Cog):
@@ -17,6 +18,7 @@ class TempVoice(commands.Cog):
         self.bot.temp_voice_channel_id = self.data.get("temp_voice_channel_id")
 
     def persist(self):
+        self.data = utils.load_data()
         self.data["temp_channels"] = list(self.temp_channels)
         self.data["temp_voice_channel_id"] = self.bot.temp_voice_channel_id
         utils.save_data(self.data)
@@ -47,6 +49,10 @@ class TempVoice(commands.Cog):
 
             self.temp_channels.add(new_channel.id)
             self.persist()
+
+            # Control Panel
+            view = views.temp_voice_panel.ControlPanel(new_channel, member.id)
+            await new_channel.send("Commandes pour gérer le salon : ", view=view)
 
         # Suppression si un salon temporaire devient vide
         if before.channel and before.channel.id in self.temp_channels:

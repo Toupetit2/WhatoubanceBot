@@ -13,7 +13,7 @@ def setup(bot, discord_api, twitch_linker):
         view = LinkView(discord_api, twitch_linker)
         logo_wtb = discord.File("Images/whatoubance.png", filename="whatoubance.png")
         msg = await interaction.channel.send(
-            "MESSAGE TEMP",
+            "",
             file=logo_wtb,
             view=view
         )
