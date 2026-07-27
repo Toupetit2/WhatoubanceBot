@@ -23,7 +23,7 @@ class LinkView(discord.ui.View):
         auth_url = f"https://auth.riotgames.com/authorize?client_id={RSO_CLIENT_ID}&redirect_uri={redirect_uri}&response_type=code&scope=openid+cpid&state={discord_id}&ui_locales=fr-FR"
         await interaction.response.send_message( f"👉 [Clique ici pour lier ton Riot]({auth_url})", ephemeral=True ) 
 
-    @discord.ui.button(label="🎥 Lier mon Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_link_button") 
+    @discord.ui.button(label="📀 Lier mon Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_link_button") 
     async def twitch_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
