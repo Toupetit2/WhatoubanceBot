@@ -9,7 +9,7 @@ def setup(bot):
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="update_rank", description="Met a jour le rank du membre choisi")
     @app_commands.describe(member="Le membre qui va avoir son rank mis a jour")
-    async def link_command(interaction: discord.Interaction, member: discord.member):
+    async def link_command(interaction: discord.Interaction, member: discord.Member):
         
         data = load_data()
 
