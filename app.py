@@ -12,6 +12,7 @@ from commands.notif_stream import setup as setup_notif_stream
 from commands.roles_link import setup as setup_riot_link
 from commands.temp_voice import setup as setup_temp_voice
 from commands.clear import setup as setup_clear
+from commands.help import setup as setup_help
 from flaskApp import FlaskApp
 from commands.antiSpam import AntiSpam
 
@@ -38,6 +39,7 @@ async def main():
     setup_notif_stream(bot, twitch_bot)
     setup_riot_link(bot, discord_api, twitch_linker)
     setup_clear(bot)
+    setup_help(bot)
     await setup_temp_voice(bot)
 
     bot.AntiSpam = AntiSpam()
