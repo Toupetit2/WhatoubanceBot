@@ -4,6 +4,7 @@ import discord
 from twitchAPI import TwitchAPI
 from discordAPI import DiscordAPI
 import json
+import utils.jsonStorage
 
 class TwitchBot:
     def __init__(self):
@@ -13,10 +14,10 @@ class TwitchBot:
         self.twitchAPI = TwitchAPI()
         self.discordAPI = DiscordAPI()
 
-        with open("data.json", "r") as f:
-            self.data = json.load(f)
+        self.data = None
 
     def init_status_streams(self):
+        self.data = utils.jsonStorage.load_data()
         if "streamers" not in self.data:
             self.data["streamers"] = {}
         if "streamers_embed_channel" not in self.data:
@@ -25,6 +26,7 @@ class TwitchBot:
             self.data["streamers_embed_message"] = {}
         for streamer in self.data["streamers"]:
             self.data["streamers"][streamer] = False
+        utils.jsonStorage.save_data(self.data)
 
     def create_stream_embed(self, username):
         stream = self.twitchAPI.get_stream(username)
@@ -44,6 +46,7 @@ class TwitchBot:
         return embed
 
     def add_stream(self, username, channel_id, message=""):
+        self.data = utils.jsonStorage.load_data()
         stream_added = False
         if len(self.data["streamers"]) == 0:
             self.data["streamers"][username] = False
@@ -56,22 +59,24 @@ class TwitchBot:
             self.data["streamers_embed_channel"][username] = channel_id
             stream_added = True
 
-        with open("data.json", "w") as f:
-            json.dump(self.data, f)
+        utils.jsonStorage.save_data(self.data)
         
         return stream_added
     
     def get_stream_announce_channel(self, username):
+        self.data = utils.jsonStorage.load_data()
         if username in self.data["streamers_embed_channel"]:
             return self.data["streamers_embed_channel"][username]
         return None
 
     def get_stream_embed_message(self, username):
+        self.data = utils.jsonStorage.load_data()
         if username in self.data["streamers_embed_message"]:
             return self.data["streamers_embed_message"][username]
         return ""
 
     def remove_stream(self, username):
+        self.data = utils.jsonStorage.load_data()
         stream_removed = False
         if username in self.data["streamers"]:
             del self.data["streamers"][username]
@@ -79,8 +84,7 @@ class TwitchBot:
             del self.data["streamers_embed_message"][username]
             stream_removed = True
 
-        with open("data.json", "w") as f:
-            json.dump(self.data, f)
+        utils.jsonStorage.save_data(self.data)
         
         return stream_removed
 
@@ -93,6 +97,7 @@ class TwitchBot:
 
 
     def check_streams_pings(self, bot):
+        self.data = utils.jsonStorage.load_data()
         live_streams = self.get_live_streams()
         for streamer in self.data["streamers"]:
             if streamer in live_streams and not self.data["streamers"][streamer]:
@@ -102,9 +107,4 @@ class TwitchBot:
             elif streamer not in live_streams and self.data["streamers"][streamer]:
                 self.data["streamers"][streamer] = False
             
-        with open("data.json", "w") as f:
-            json.dump(self.data, f)
-
-
-    def get_wtb_watchers(self, streamer):
-        self.twitchAPI
+        utils.jsonStorage.save_data(self.data)
