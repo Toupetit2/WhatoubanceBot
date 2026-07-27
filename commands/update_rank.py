@@ -40,7 +40,7 @@ def setup(bot):
     @app_commands.describe(member="Le membre qui va avoir son rank mis a jour")
     async def link_command(interaction: discord.Interaction, member: discord.Member):
 
-        message = await update_rank(interaction, member.id)
+        message = await update_rank(interaction, member)
 
         await interaction.response.send_message(message, ephemeral=True)
 
