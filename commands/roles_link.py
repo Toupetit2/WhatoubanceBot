@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from utils.jsonStorage import load_data, save_data
 from views.riot_link_view import RiotLinkView
-from views.twitch_link_views import TwitchLinkView
 
 
 def setup(bot, discord_api, twitch_linker):
@@ -10,12 +9,11 @@ def setup(bot, discord_api, twitch_linker):
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="link_riot", description="Envoyer le panneau de liaison Riot")
     async def link_riot_command(interaction: discord.Interaction, role: discord.role):
-        viewRiot = RiotLinkView(discord_api)
-        viewTwitch = TwitchLinkView(twitch_linker, discord_api)
+        view = RiotLinkView(discord_api, twitch_linker)
 
         msg = await interaction.channel.send(
             "Clique sur le bouton pour connecter ton compte Riot et obtenir le rôle lié a ton rang !",
-            view=viewRiot, view=viewTwitch
+            view=view
         )
 
         data = load_data()
