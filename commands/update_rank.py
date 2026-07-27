@@ -4,6 +4,35 @@ from utils.jsonStorage import load_data, save_data
 import tftAPI
 import discordAPI
 
+async def update_rank(interaction: discord.Interaction, member: discord.Member):
+    data = load_data()
+    member_id = str(member.id)
+
+    if member_id not in data["riot_links"]:
+        
+        return f"<@{member.id}> n'a pas lié son compte riot."
+
+    old_rank = data["riot_links"][member_id]["tft_rank"]
+    puuid = data["riot_links"][member_id]["puuid"]
+    cpid = data["riot_links"][member_id]["cpid"]
+
+    current_rank = tftAPI.get_tft_rank(puuid, cpid)
+
+    if current_rank != old_rank:
+        role = interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id"))
+        try:
+            await member.add_roles(role)
+        except discord.Forbidden:
+            return "Le rôle est trop haut dans la hiérarchie."
+            return
+        except discord.HTTPException as e:
+            return f"Erreur lors de l'ajout du rôle : {e}"
+            return
+
+        return f"<@{member.id}> a eu son rôle mis a jour !"
+    else:
+        return f"<@{member.id}> avait déjà le bon role."
+
 def setup(bot):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
@@ -11,38 +40,6 @@ def setup(bot):
     @app_commands.describe(member="Le membre qui va avoir son rank mis a jour")
     async def link_command(interaction: discord.Interaction, member: discord.Member):
         
-        data = load_data()
-        member_id = str(member.id)
+        await interaction.response.send_message(update_rank(member.id), ephemeral=True)
 
-        if member_id not in data["riot_links"]:
-            await interaction.response.send_message(
-                            f"<@{member.id}> n'a pas lié son compte riot.",
-                            ephemeral=True
-                        )
-
-        old_rank = data["riot_links"][member_id]["tft_rank"]
-        puuid = data["riot_links"][member_id]["puuid"]
-        cpid = data["riot_links"][member_id]["cpid"]
-
-        current_rank = tftAPI.get_tft_rank(puuid, cpid)
-
-        if current_rank != old_rank:
-            role = interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id"))
-            try:
-                await member.add_roles(role)
-            except discord.Forbidden:
-                await interaction.response.send_message("Le rôle est trop haut dans la hiérarchie.")
-                return
-            except discord.HTTPException as e:
-                await interaction.response.send_message(f"Erreur lors de l'ajout du rôle : {e}")
-                return
-
-            await interaction.response.send_message(
-                f"<@{member.id}> a eu son rôle mis a jour !",
-                ephemeral=True
-            )
-        else:
-            await interaction.response.send_message(
-                f"<@{member.id}> avait déjà le bon role.",
-                ephemeral=True
-            )
+    
