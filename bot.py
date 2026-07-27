@@ -5,7 +5,6 @@ import time
 import utils.jsonStorage
 import antiSpam
 from views.riot_link_view import RiotLinkView
-from views.twitch_link_views import TwitchLinkView
 
 class Bot(commands.Bot):
     def __init__(self):
