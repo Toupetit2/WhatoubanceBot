@@ -8,7 +8,7 @@ from utils.jsonStorage import load_data, save_data
 RSO_CLIENT_ID = dotenv.get_key('.env', 'RSO_CLIENT_ID')
 RSO_CLIENT_SECRET = dotenv.get_key('.env', 'RSO_CLIENT_SECRET')
 
-class RiotLinkView(discord.ui.View): 
+class LinkView(discord.ui.View): 
     
     def __init__(self, discordAPI, twitch_linker):
         super().__init__(timeout=None)
@@ -16,7 +16,7 @@ class RiotLinkView(discord.ui.View):
         self.twitch_linker = twitch_linker
     
     @discord.ui.button(label="🔗 Lier mon Riot", style=discord.ButtonStyle.blurple, custom_id="riot_link_button") 
-    async def link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
+    async def riot_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
 
         redirect_uri = 'https://bot.whatoubance.fr/oauth/callback'
@@ -24,7 +24,7 @@ class RiotLinkView(discord.ui.View):
         await interaction.response.send_message( f"👉 [Clique ici pour lier ton Riot]({auth_url})", ephemeral=True ) 
 
     @discord.ui.button(label="🔗 Lier mon Twitch", style=discord.ButtonStyle.blurple, custom_id="twitch_link_button") 
-    async def link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
+    async def twitch_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
         await interaction.response.send_message( f"👉 Clique ici pour lier ton Twitch :\n{auth_url}", ephemeral=True ) 

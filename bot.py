@@ -4,7 +4,7 @@ from discord.ext import commands
 import time
 import utils.jsonStorage
 import antiSpam
-from views.riot_link_view import RiotLinkView
+from views.link_view import LinkView
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -40,7 +40,7 @@ class Bot(commands.Bot):
             self.background_task = asyncio.create_task(self.stream_check_loop())
             print("INFO - Background task for stream checking started.", flush=True)
 
-        self.add_view(RiotLinkView(self.discordAPI))
+        self.add_view(LinkView(self.discordAPI))
 
     
     async def on_message(self, message):
