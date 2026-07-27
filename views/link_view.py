@@ -29,7 +29,7 @@ class LinkView(discord.ui.View):
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
         await interaction.response.send_message( f"👉 [Clique ici pour lier ton Twitch]({auth_url})", ephemeral=True, suppress_embeds=True) 
 
-    @discord.ui.button(label="🟣 Notifs Twitch", style=discord.ButtonStyle.link, custom_id="twitch_notification_button") 
+    @discord.ui.button(label="🟣 Notifs Twitch", style=discord.ButtonStyle.secondary, custom_id="twitch_notification_button") 
     async def twitch_notification_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         data = load_data()
         role = interaction.guild.get_role(data["twitch_notification_role"])
