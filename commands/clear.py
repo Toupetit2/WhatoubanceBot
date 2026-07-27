@@ -20,5 +20,5 @@ def setup(bot):
 
         msg = await interaction.followup.send(f"✅ {len(deleted)} messages supprimés !")
         print(f"Message envoyé, suppression prévue dans 10s : {msg.id}", flush=True)
-        await msg.delete(delay=10)
+        await msg.delete(delay=10000)
         print(f"Message {msg.id} supprimé après le délai", flush=True)
