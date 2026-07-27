@@ -9,7 +9,7 @@ def setup(bot, discord_api, twitch_linker):
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="setup_account", description="Envoyer le panneau de liaison Riot")
     @app_commands.describe(wtb_role="Le rôle a donner aux fans WTB (avec le tag sur twitch)")
-    async def link_command(interaction: discord.Interaction, wtb_role: discord.Role):
+    async def link_command(interaction: discord.Interaction, wtb_role: discord.Role, twitch_notification_role: discord.Role):
         view = LinkView(discord_api, twitch_linker)
         logo_wtb = discord.File("Images/whatoubance.png", filename="whatoubance.png")
         msg = await interaction.channel.send(
@@ -20,6 +20,7 @@ def setup(bot, discord_api, twitch_linker):
 
         data = load_data()
         data["wtb_twitch_role_id"] = wtb_role.id
+        data["twitch_notification_role"] = twitch_notification_role.id
         data["twitch_link_panel"] = {
             "message_id": msg.id,
             "channel_id": msg.channel.id

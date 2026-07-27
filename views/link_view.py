@@ -28,3 +28,23 @@ class LinkView(discord.ui.View):
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
         await interaction.response.send_message( f"👉 [Clique ici pour lier ton Twitch]({auth_url})", ephemeral=True, suppress_embeds=True) 
+
+    @discord.ui.button(label="🟣 Notifs Twitch", style=discord.ButtonStyle.blurple, custom_id="twitch_notification_button") 
+    async def twitch_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
+        data = load_data()
+        role = interaction.guild.get_role(data["twitch_notification_role"])
+        
+        if role in interaction.user.roles:
+            await interaction.user.remove_roles(role)
+            await interaction.response.send_message(f"Rôle **{role.name}** retiré.", ephemeral=True)
+        else:
+            try:
+                await interaction.user.add_roles(role)
+                await interaction.response.send_message(f"Rôle **{role.name}** ajouté !", ephemeral=True)
+            except discord.Forbidden:
+                await interaction.response.send_message(
+                    "Je n'ai pas la permission d'attribuer ce rôle.",
+                    ephemeral=True,
+                )
+    
+        
