@@ -7,8 +7,9 @@ from views.link_view import LinkView
 def setup(bot, discord_api, twitch_linker):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
-    @bot.tree.command(name="link_riot", description="Envoyer le panneau de liaison Riot")
-    async def link_riot_command(interaction: discord.Interaction, role: discord.Role):
+    @bot.tree.command(name="setup_link", description="Envoyer le panneau de liaison Riot")
+    @app_commands.describe(WTB_role="Le rôle a donner aux fans WTB (avec le tag sur twitch)")
+    async def link_command(interaction: discord.Interaction, WTB_role: discord.Role):
         view = LinkView(discord_api, twitch_linker)
 
         msg = await interaction.channel.send(
@@ -18,7 +19,7 @@ def setup(bot, discord_api, twitch_linker):
 
         data = load_data()
         data["guild_id"] = interaction.guild.id
-        data["wtb_twitch_role_id"] = role.id
+        data["wtb_twitch_role_id"] = WTB_role.id
         data["twitch_link_panel"] = {
             "message_id": msg.id,
             "channel_id": msg.channel.id
