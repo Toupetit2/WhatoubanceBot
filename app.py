@@ -15,6 +15,7 @@ from commands.clear import setup as setup_clear
 from commands.help import setup as setup_help
 from flaskApp import FlaskApp
 from commands.antiSpam import AntiSpam
+from commands.update_rank import setup as setup_update_rank
 
 dotenv.load_dotenv()
 
@@ -29,7 +30,6 @@ discord_api = DiscordAPI()
 twitch_bot = TwitchBot()
 twitch_linker = TwitchLinker(bot)
 flask_app = FlaskApp(twitch_linker)
-twitch_link_view_manager = TwitchLinkViewManager(bot, twitch_linker, discord_api)
     
 bot.twitch_bot = twitch_bot
 bot.discordAPI = discord_api
@@ -40,6 +40,7 @@ async def main():
     setup_riot_link(bot, discord_api, twitch_linker)
     setup_clear(bot)
     setup_help(bot)
+    setup_update_rank(bot)
     await setup_temp_voice(bot)
 
     bot.AntiSpam = AntiSpam()

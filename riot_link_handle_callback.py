@@ -53,9 +53,8 @@ def handle_callback(discordAPI, bot, code, state):
 
     data = utils.jsonStorage.load_data()
     data["riot_links"][str(state)] = {
-        "riot_id": account_info.get("puuid"),
-        "riot_name": user_info.get("name"),
-        "riot_tag": user_info.get("tag_line"),
+        "puuid": account_info.get("puuid"),
+        "cpid": user_info.get("cpid"),
         "tft_rank": tft_rank
     }
 

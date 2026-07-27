@@ -66,23 +66,3 @@ class TwitchLinkView(discord.ui.View):
             ephemeral=True
         )
 
-class TwitchLinkViewManager:
-    def __init__(self, bot, twitch_linker, discordAPI):
-        self.bot = bot
-        self.twitch_linker = twitch_linker
-        self.discordAPI = discordAPI
-
-    async def init(self):
-        data = load_data()
-        
-        if "twitch_link_panel" in data:
-            message_id = data["twitch_link_panel"]["message_id"]
-            channel_id = data["twitch_link_panel"]["channel_id"]
-
-            channel = self.bot.get_channel(channel_id)
-            if channel:
-                if channel.fetch_message(message_id):
-                    self.bot.add_view(TwitchLinkView(self.twitch_linker, self.discordAPI))
-
-                    
-                    

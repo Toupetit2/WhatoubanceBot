@@ -7,7 +7,7 @@ from views.link_view import LinkView
 def setup(bot, discord_api, twitch_linker):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
-    @bot.tree.command(name="setup_account", description="Envoyer le panneau de liaison Riot")
+    @bot.tree.command(name="setup_account", description="Envoie le panneau de liaison des compte et de notifications twitch")
     @app_commands.describe(wtb_role="Le rôle a donner aux fans WTB (avec le tag sur twitch)")
     async def link_command(interaction: discord.Interaction, wtb_role: discord.Role, twitch_notification_role: discord.Role):
         view = LinkView(discord_api, twitch_linker)
