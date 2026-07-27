@@ -70,12 +70,6 @@ class LimitModal(discord.ui.Modal, title="Limiter le salon"):
                 f"Erreur lors de la modification : {e}", ephemeral=True
             )
 
-class LimitView(discord.ui.View):
-    def __init__(self, channel: discord.VoiceChannel):
-        super().__init__(timeout=60)
-        self.add_item(LimitModal(channel))
-
-
 class ControlPanel(discord.ui.View):
     def __init__(self, channel: discord.VoiceChannel, owner_id: int):
         super().__init__(timeout=None)
@@ -100,6 +94,4 @@ class ControlPanel(discord.ui.View):
     async def limit_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if not await self.check_owner(interaction):
             return
-        await interaction.response.send_message(
-            view=LimitView(self.channel), ephemeral=True
-        )
+        await interaction.response.send_modal(LimitModal(self.channel))
