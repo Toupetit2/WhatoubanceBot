@@ -1,10 +1,35 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import utils.jsonStorage as utils
 
 class TempVoice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+        self.data = utils.load_data()
+        self.temp_channels = self.data["temp_channels"] if "temp_channels" in self.data else {}
+
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        to_remove = []
+        for channel_id in self.temp_channels:
+            channel = self.bot.get_channel(channel_id)
+
+            if channel is None:
+                to_remove.append(channel_id)
+
+            elif len(channel.members) == 0:
+                await channel.delete()
+                to_remove.append(channel_id)
+
+        for channel_id in to_remove:
+            self.temp_channels.discard(channel_id)
+
+        self.data["temp_channels"] = self.temp_channels
+        utils.save_data(self.data)
+
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -13,14 +38,16 @@ class TempVoice(commands.Cog):
             new_channel_name = f"{member.display_name}'s Salon"
             new_channel = await after.channel.category.create_voice_channel(new_channel_name)
     
-            await member.move_to(new_channel)
-    
-            def check(m, b, a):
-                return b.channel == new_channel and a.channel != new_channel
+            await member.move_to(new_channel)            
 
-            await self.bot.wait_for('voice_state_update', check=check)
+            self.temp_channels.add(new_channel.id)
+
             if len(new_channel.members) == 0: 
                 await new_channel.delete()
+                self.temp_channels.discard(before.channel.id)
+
+            self.data["temp_channels"] = self.temp_channels
+            utils.save_data(self.data)
     
 
 async def setup(bot):
