@@ -9,8 +9,7 @@ from twitchVerify import TwitchLinker
 from twitchLinkButton import TwitchLinkViewManager
 from bot import Bot
 from commands.notif_stream import setup as setup_notif_stream
-from commands.twitch_link import setup as setup_twitch_link
-from commands.riot_link import setup as setup_riot_link
+from commands.roles_link import setup as setup_riot_link
 from commands.temp_voice import setup as setup_temp_voice
 from flaskApp import FlaskApp
 from antiSpam import AntiSpam
@@ -36,8 +35,7 @@ bot.twitch_linker = twitch_linker
 
 async def main():
     setup_notif_stream(bot, twitch_bot)
-    setup_twitch_link(bot, twitch_linker, discord_api)
-    setup_riot_link(bot, discord_api)
+    setup_riot_link(bot, discord_api, twitch_linker)
     await setup_temp_voice(bot)
 
     bot.AntiSpam = AntiSpam()

@@ -2,25 +2,36 @@ import discord
 from discord import app_commands
 from utils.jsonStorage import load_data, save_data
 from views.riot_link_view import RiotLinkView
+from views.twitch_link_views import TwitchLinkView
 
 
-def setup(bot, discord_api):
+def setup(bot, discord_api, twitch_linker):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="link_riot", description="Envoyer le panneau de liaison Riot")
-    async def link_riot_command(interaction: discord.Interaction):
-        view = RiotLinkView(discord_api)
+    async def link_riot_command(interaction: discord.Interaction, role: discord.role):
+        viewRiot = RiotLinkView(discord_api)
+        viewTwitch = TwitchLinkView(twitch_linker, discord_api)
 
         msg = await interaction.channel.send(
             "Clique sur le bouton pour connecter ton compte Riot et obtenir le rôle lié a ton rang !",
-            view=view
+            view=viewRiot, view=viewTwitch
         )
 
+        data = load_data()
+        data["guild_id"] = interaction.guild.id
+        data["wtb_twitch_role_id"] = role.id
+        data["twitch_link_panel"] = {
+            "message_id": msg.id,
+            "channel_id": msg.channel.id
+        }
+        save_data(data)
 
         await interaction.response.send_message(
             "✅ Panneau de liaison Riot envoyé !",
             ephemeral=True
         )
+
     
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
