@@ -20,4 +20,4 @@ def get_tft_rank(puuid, cpid):
         if data:
             if data[0]['tier'] != 'UNRANKED':
                 return data[0]['tier']  # Assuming the first entry is the relevant one
-            return None
+            return 'UNRANKED'
