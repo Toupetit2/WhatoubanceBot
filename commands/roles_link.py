@@ -11,9 +11,10 @@ def setup(bot, discord_api, twitch_linker):
     @app_commands.describe(wtb_role="Le rôle a donner aux fans WTB (avec le tag sur twitch)")
     async def link_command(interaction: discord.Interaction, wtb_role: discord.Role):
         view = LinkView(discord_api, twitch_linker)
-
+        logo_wtb = discord.File("Images/whatoubance.png", filename="whatoubance.png")
         msg = await interaction.channel.send(
             "MESSAGE TEMP",
+            file=logo_wtb,
             view=view
         )
 
