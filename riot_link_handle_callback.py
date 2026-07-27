@@ -74,7 +74,7 @@ def handle_callback(discordAPI, bot, code, state):
         member = bot.get_guild(guild_id).get_member(int(state))
         current_role_ids = {r.id for r in member.roles} if member else set()
 
-        for role in ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]:
+        for role in ["UNRANKED", "IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]:
             if role != tft_rank:
                 other_role_id = data.get(f"tft_rank_{role}_role_id")
                 if other_role_id and int(other_role_id) in current_role_ids:
