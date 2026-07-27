@@ -12,7 +12,7 @@ def setup(bot, discord_api, twitch_linker):
         view = LinkView(discord_api, twitch_linker)
 
         msg = await interaction.channel.send(
-            "Clique sur le bouton pour connecter ton compte Riot et obtenir le rôle lié a ton rang !",
+            "MESSAGE TEMP",
             view=view
         )
 
@@ -26,7 +26,7 @@ def setup(bot, discord_api, twitch_linker):
         save_data(data)
 
         await interaction.response.send_message(
-            "✅ Panneau de liaison Riot envoyé !",
+            "✅ Panneau de liaison Riot et Twitch envoyé !",
             ephemeral=True
         )
 
