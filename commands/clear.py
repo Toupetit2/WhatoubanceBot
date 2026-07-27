@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-def setup(self, bot):
+def setup(bot):
     @app_commands.guild_only()
     @bot.tree.command(name="clear", description="Supprime les X derniers messages")
     @app_commands.describe(message_nb="Nombre de messages a supprimer")
