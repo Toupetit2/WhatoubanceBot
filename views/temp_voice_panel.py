@@ -15,14 +15,16 @@ class RenameModal(discord.ui.Modal, title="Renommer le salon"):
         self.channel = channel
 
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+
         try:
             await self.channel.edit(name=str(self.new_name))
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"Salon renommé en **{self.new_name}**.", ephemeral=True
             )
         except discord.HTTPException:
-            # Rate limit Discord : 2 renommages / 10 min par salon
-            await interaction.response.send_message(
+            # Rate limit Discord : 2 renames / 10 min per channel
+            await interaction.followup.send(
                 "Impossible de renommer maintenant (limite Discord, réessaie dans quelques minutes).",
                 ephemeral=True,
             )
@@ -55,7 +57,7 @@ class LimitView(discord.ui.View):
 
 class ControlPanel(discord.ui.View):
     def __init__(self, channel: discord.VoiceChannel, owner_id: int):
-        super().__init__(timeout=None)  # persistant, pas d'expiration
+        super().__init__(timeout=None)
         self.channel = channel
         self.owner_id = owner_id
 
