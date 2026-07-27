@@ -18,7 +18,6 @@ def setup(bot, discord_api, twitch_linker):
         )
 
         data = load_data()
-        data["guild_id"] = interaction.guild.id
         data["wtb_twitch_role_id"] = wtb_role.id
         data["twitch_link_panel"] = {
             "message_id": msg.id,

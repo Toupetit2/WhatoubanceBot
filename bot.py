@@ -33,6 +33,12 @@ class Bot(commands.Bot):
     async def on_ready(self):
         print(f"INFO - Connected as {self.user}", flush=True)
 
+        guild_id = self.guilds[0].id # first server on the list
+
+        data = utils.jsonStorage.load_data()
+        data["guild_id"] = guild_id
+        utils.jsonStorage.save_data(data)
+
         if self.twitch_bot is not None:
             self.twitch_bot.init_status_streams()
 
