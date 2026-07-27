@@ -62,6 +62,7 @@ def handle_callback(discordAPI, bot, code, state):
     print(f"INFO - Riot account info saved for user {state}", flush=True)
     #give role based on rank
     if tft_rank:
+        print(tft_rank, flush=True)
         coro = discordAPI.give_role(bot, int(data["guild_id"]), int(state), int(data["tft_rank_" + tft_rank + "_role_id"]))
         future = asyncio.run_coroutine_threadsafe(coro, bot.loop)
 
