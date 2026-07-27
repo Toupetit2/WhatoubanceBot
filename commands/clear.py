@@ -15,7 +15,7 @@ def setup(bot):
         )
             return
 
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer()
         deleted = await interaction.channel.purge(limit=message_nb)
 
         await interaction.followup.send(
