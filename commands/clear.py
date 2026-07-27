@@ -1,4 +1,3 @@
-print("!!!!! FICHIER CLEAR.PY CHARGÉ !!!!!", flush=True)
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -17,9 +16,15 @@ def setup(bot):
             return
 
         await interaction.response.defer()
-        deleted = await interaction.channel.purge(limit=message_nb)
-
-        msg = await interaction.followup.send(f"✅ {len(deleted)} messages supprimés !")
-        print(f"Message envoyé, suppression prévue dans 10s : {msg.id}", flush=True)
-        await msg.delete(delay=10000)
-        print(f"Message {msg.id} supprimé après le délai", flush=True)
+        try:
+            deleted = await interaction.channel.purge(limit=message_nb)
+            print(f"Purge terminée, {len(deleted)} messages supprimés", flush=True)
+            
+            msg = await interaction.followup.send(f"✅ {len(deleted)} messages supprimés !")
+            print(f"Message envoyé : {msg.id}", flush=True)
+            
+            await msg.delete(delay=10000)
+        except Exception as e:
+            print(f"ERREUR dans clear_command: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
