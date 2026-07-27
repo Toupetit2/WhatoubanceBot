@@ -18,6 +18,5 @@ def setup(bot):
         await interaction.response.defer()
         deleted = await interaction.channel.purge(limit=message_nb)
 
-        await interaction.followup.send(
-            f"✅ {deleted} messages supprimés !", delete_after=10
-        )
+        msg = await interaction.followup.send(f"✅ {deleted} messages supprimés !")
+        await msg.delete(delay=10)
