@@ -14,6 +14,12 @@ def setup(bot):
         data = load_data()
         member_id = str(member.id)
 
+        if member_id not in data["riot_links"]:
+            await interaction.response.send_message(
+                            f"<@{member.id}> n'a pas lié son compte riot.",
+                            ephemeral=True
+                        )
+
         old_rank = data["riot_links"][member_id]["tft_rank"]
         puuid = data["riot_links"][member_id]["puuid"]
         cpid = data["riot_links"][member_id]["cpid"]
