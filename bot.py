@@ -40,7 +40,7 @@ class Bot(commands.Bot):
             self.background_task = asyncio.create_task(self.stream_check_loop())
             print("INFO - Background task for stream checking started.", flush=True)
 
-        self.add_view(LinkView(self.discordAPI))
+        self.add_view(LinkView(self.discordAPI, self.twitch_linker))
 
     
     async def on_message(self, message):
