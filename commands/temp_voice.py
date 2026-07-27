@@ -52,7 +52,7 @@ class TempVoice(commands.Cog):
 
             # Control Panel
             view = views.temp_voice_panel.ControlPanel(new_channel, member.id)
-            await new_channel.send("Commandes pour gérer le salon : ", view=view)
+            await new_channel.send(f"<@{member.id}> - Commandes pour gérer le salon : ", view=view)
 
         # Suppression si un salon temporaire devient vide
         if before.channel and before.channel.id in self.temp_channels:
