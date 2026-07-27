@@ -19,4 +19,6 @@ def setup(bot):
         deleted = await interaction.channel.purge(limit=message_nb)
 
         msg = await interaction.followup.send(f"✅ {len(deleted)} messages supprimés !")
-        
+        print(f"Message envoyé, suppression prévue dans 10s : {msg.id}", flush=True)
+        await msg.delete(delay=10)
+        print(f"Message {msg.id} supprimé après le délai", flush=True)

@@ -14,6 +14,7 @@ from commands.temp_voice import setup as setup_temp_voice
 from commands.clear import setup as setup_clear
 from flaskApp import FlaskApp
 from commands.antiSpam import AntiSpam
+from commands.sync import setup as setup_sync
 
 dotenv.load_dotenv()
 
@@ -38,6 +39,7 @@ async def main():
     setup_notif_stream(bot, twitch_bot)
     setup_riot_link(bot, discord_api, twitch_linker)
     setup_clear(bot)
+    setup_sync(bot)
     await setup_temp_voice(bot)
 
     bot.AntiSpam = AntiSpam()
