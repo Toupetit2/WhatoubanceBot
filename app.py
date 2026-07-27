@@ -12,7 +12,7 @@ from commands.notif_stream import setup as setup_notif_stream
 from commands.roles_link import setup as setup_riot_link
 from commands.temp_voice import setup as setup_temp_voice
 from flaskApp import FlaskApp
-from antiSpam import AntiSpam
+from commands.antiSpam import AntiSpam
 
 dotenv.load_dotenv()
 

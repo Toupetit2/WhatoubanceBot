@@ -45,7 +45,7 @@ class AntiSpam:
     def setup(self, bot):
         @app_commands.guild_only()
         @app_commands.default_permissions(administrator=True)
-        @bot.tree.command(name="anti_spam_setup", description="Définir le salon admin pour l'anti-spam")
+        @bot.tree.command(name="setup_anti_spam", description="Définir le salon admin pour l'anti-spam")
         async def anti_spam_setup_command(interaction: discord.Interaction, channel: discord.TextChannel):
             data = utils.jsonStorage.load_data()
             data["anti_spam_admin_channel_id"] = channel.id

@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import time
 import utils.jsonStorage
-import antiSpam
+import commands.antiSpam as antiSpam
 from views.link_view import LinkView
 
 class Bot(commands.Bot):
