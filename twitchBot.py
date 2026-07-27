@@ -102,7 +102,7 @@ class TwitchBot:
         for streamer in self.data["streamers"]:
             if streamer in live_streams and not self.data["streamers"][streamer]:
                 embed = self.create_stream_embed(streamer)
-                bot.loop.create_task(self.discordAPI.send_message(bot, self.data["streamers_embed_channel"][streamer], self.data["streamers_embed_message"][streamer],embed=embed))
+                bot.loop.create_task(self.discordAPI.send_message(bot, self.data["streamers_embed_channel"][streamer], self.data["streamers_embed_message"][streamer],embed=embed, delete_after=86400))
                 self.data["streamers"][streamer] = True
             elif streamer not in live_streams and self.data["streamers"][streamer]:
                 self.data["streamers"][streamer] = False
