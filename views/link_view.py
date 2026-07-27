@@ -15,7 +15,7 @@ class LinkView(discord.ui.View):
         self.discordAPI = discordAPI
         self.twitch_linker = twitch_linker
     
-    @discord.ui.button(label="🟥 Lier mon Riot", style=discord.ButtonStyle.blurple, custom_id="riot_link_button") 
+    @discord.ui.button(label="🟥 Lier mon Riot", style=discord.ButtonStyle.danger, custom_id="riot_link_button") 
     async def riot_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
 
