@@ -41,7 +41,6 @@ class Bot(commands.Bot):
             print("INFO - Background task for stream checking started.", flush=True)
 
         self.add_view(RiotLinkView(self.discordAPI))
-        self.add_view(TwitchLinkView(self.twitch_linker, self.discordAPI))
 
     
     async def on_message(self, message):

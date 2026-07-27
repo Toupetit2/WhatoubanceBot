@@ -8,7 +8,7 @@ def setup(bot, discord_api, twitch_linker):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="link_riot", description="Envoyer le panneau de liaison Riot")
-    async def link_riot_command(interaction: discord.Interaction, role: discord.role):
+    async def link_riot_command(interaction: discord.Interaction, role: discord.Role):
         view = RiotLinkView(discord_api, twitch_linker)
 
         msg = await interaction.channel.send(
