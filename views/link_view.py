@@ -27,4 +27,4 @@ class LinkView(discord.ui.View):
     async def twitch_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
-        await interaction.response.send_message( f"👉 [Clique ici pour lier ton Twitch]({auth_url})", ephemeral=True ) 
+        await interaction.response.send_message( f"👉 [Clique ici pour lier ton Twitch]({auth_url})", ephemeral=True, embed=False) 
