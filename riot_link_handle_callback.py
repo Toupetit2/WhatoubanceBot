@@ -58,7 +58,7 @@ def handle_callback(discordAPI, bot, code, state):
         "riot_tag": user_info.get("tag_line"),
         "tft_rank": tft_rank
     }
-    utils.jsonStorage.save_data(data)
+
     print(f"INFO - Riot account info saved for user {state}", flush=True)
     #give role based on rank
     if tft_rank:
@@ -89,5 +89,6 @@ def handle_callback(discordAPI, bot, code, state):
 
                     future.add_done_callback(_on_done)
 
+    utils.jsonStorage.save_data(data)
 
     return "✅ Compte Riot lié avec succès ! Tu peux fermer cette page.", 200

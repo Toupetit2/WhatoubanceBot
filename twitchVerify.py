@@ -4,6 +4,7 @@ import requests
 from discordAPI import DiscordAPI
 import json
 import asyncio
+import utils.jsonStorage
 
 dotenv.load_dotenv()
 dotenv_file = dotenv.find_dotenv()
@@ -14,23 +15,6 @@ REDIRECT_URI = "https://bot.whatoubance.fr/oauth/twitch/callback"
 
 def is_wtb(display_name):
     return display_name.lower().startswith("wtb")
-
-
-def load_data():
-    if not os.path.exists("data.json"):
-        return {}
-
-    with open("data.json", "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return {}
-
-
-def save_data(data):
-    with open("data.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
-
 
 class TwitchLinker:
     def __init__(self, bot):
@@ -75,7 +59,7 @@ class TwitchLinker:
 
         user = user_res["data"][0]
 
-        data = load_data()
+        data = utils.jsonStorage.load_data()
 
         if is_wtb(user["display_name"]):
             coro = self.discordAPI.give_role(self.bot, int(data["guild_id"]), int(state), data["wtb_twitch_role_id"])
