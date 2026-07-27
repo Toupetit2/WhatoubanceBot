@@ -5,6 +5,7 @@ import time
 import utils.jsonStorage
 import commands.antiSpam as antiSpam
 from views.link_view import LinkView
+from commands.update_rank import UpdateRankView
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -47,6 +48,7 @@ class Bot(commands.Bot):
             print("INFO - Background task for stream checking started.", flush=True)
 
         self.add_view(LinkView(self.discordAPI, self.twitch_linker))
+        self.add_view(UpdateRankView())
 
     
     async def on_message(self, message):

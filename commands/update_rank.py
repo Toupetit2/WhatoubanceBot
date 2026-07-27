@@ -33,15 +33,38 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
     else:
         return f"<@{member.id}> avait déjà le bon role."
 
+class UpdateRankView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="UpdateRankView", style=discord.ButtonStyle.primary)
+    async def rename_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+
+        message = await update_rank(interaction, interaction.user)
+        
+        await interaction.response.send_message(message, ephemeral=True)
+
 def setup(bot):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="update_rank", description="Met a jour le rank du membre choisi")
     @app_commands.describe(member="Le membre qui va avoir son rank mis a jour")
-    async def link_command(interaction: discord.Interaction, member: discord.Member):
+    async def update_rank_command(interaction: discord.Interaction, member: discord.Member):
 
         message = await update_rank(interaction, member)
 
         await interaction.response.send_message(message, ephemeral=True)
+
+
+    @app_commands.guild_only()
+    @app_commands.default_permissions(administrator=True)
+    @bot.tree.command(name="setup_update_rank_button", description="Envoie un bouton pour pouvoir mettre a jour son rank")
+    async def setup_update_rank_command(interaction: discord.Interaction):
+
+        view = UpdateRankView()
+
+        await interaction.response.send_message("", view=view)
+
+
 
     
