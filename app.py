@@ -20,7 +20,7 @@ bot = Bot()
 flask_app = FlaskApp(bot.twitch_linker)
     
 async def main():
-    bot_setup(bot)
+    await bot_setup(bot)
 
     threading.Thread(target=flask_app.run, daemon=True).start()
 
