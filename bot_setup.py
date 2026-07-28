@@ -4,6 +4,7 @@ from commands.temp_voice import setup as setup_temp_voice
 from commands.clear import setup as setup_clear
 from commands.help import setup as setup_help
 from commands.update_rank import setup as setup_update_rank
+from Monnaie.commands.give import setup as setup_give
 
 async def bot_setup(bot):
     setup_notif_stream(bot, bot.twitch_bot)
@@ -12,3 +13,5 @@ async def bot_setup(bot):
     setup_help(bot)
     setup_update_rank(bot)
     await setup_temp_voice(bot)
+
+    setup_give(bot)
