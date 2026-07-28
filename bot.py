@@ -21,7 +21,7 @@ class Bot(commands.Bot):
 
         self.discord_api = DiscordAPI()
         self.twitch_bot = TwitchBot()
-        self.twitch_linker = TwitchLinker(self.bot)
+        self.twitch_linker = TwitchLinker(self)
         self.background_task = None
         self.link_view_manager = None
         self.anti_spam = antiSpam.AntiSpam()
