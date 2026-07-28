@@ -84,13 +84,13 @@ class ControlPanel(discord.ui.View):
             return False
         return True
 
-    @discord.ui.button(label="Renommer", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Renommer", style=discord.ButtonStyle.blurple)
     async def rename_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if not await self.check_owner(interaction):
             return
         await interaction.response.send_modal(RenameModal(self.channel))
 
-    @discord.ui.button(label="Limiter", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="Limiter", style=discord.ButtonStyle.blurple)
     async def limit_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if not await self.check_owner(interaction):
             return

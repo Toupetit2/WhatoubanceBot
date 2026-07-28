@@ -44,7 +44,7 @@ class UpdateRankView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="🔄 Update ton rank", style=discord.ButtonStyle.grey, custom_id="UpdateRankView")
+    @discord.ui.button(label="🔄 Update ton rank", style=discord.ButtonStyle.gray, custom_id="UpdateRankView")
     async def rename_button(self, interaction: discord.Interaction, button: discord.ui.Button):
 
         message = await update_rank(interaction, interaction.user)
