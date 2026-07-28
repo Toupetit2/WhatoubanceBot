@@ -9,4 +9,4 @@ def setup(bot):
     async def give_coins_command(interaction: discord.Interaction, member: discord.Member):
         give(10, member)
 
-        await interaction.response.send_message("", ephemeral=True)
+        await interaction.response.send_message("a", ephemeral=True)
