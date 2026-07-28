@@ -15,19 +15,19 @@ class LinkView(discord.ui.View):
         self.discordAPI = discordAPI
         self.twitch_linker = twitch_linker
     
-    @discord.ui.button(label="🏆 Lier mon Riot", style=discord.ButtonStyle.gray, custom_id="riot_link_button") 
+    @discord.ui.button(label="🏆 Lier Riot", style=discord.ButtonStyle.gray, custom_id="riot_link_button") 
     async def riot_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
 
         redirect_uri = 'https://bot.whatoubance.fr/oauth/callback'
         auth_url = f"https://auth.riotgames.com/authorize?client_id={RSO_CLIENT_ID}&redirect_uri={redirect_uri}&response_type=code&scope=openid+cpid&state={discord_id}&ui_locales=fr-FR"
-        await interaction.response.send_message( f"👉 [Clique ici pour lier ton Riot]({auth_url})", ephemeral=True ) 
+        await interaction.response.send_message( f"👉 [Clique ici pour lier ton compte Riot]({auth_url})", ephemeral=True ) 
 
-    @discord.ui.button(label="📀 Lier mon Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_link_button") 
+    @discord.ui.button(label="📀 Lier Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_link_button") 
     async def twitch_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
-        await interaction.response.send_message( f"👉 [Clique ici pour lier ton Twitch]({auth_url})", ephemeral=True, suppress_embeds=True) 
+        await interaction.response.send_message( f"👉 [Clique ici pour lier ton compte Twitch]({auth_url})", ephemeral=True, suppress_embeds=True) 
 
     @discord.ui.button(label="🔔 Notifs Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_notification_button") 
     async def twitch_notification_button(self, interaction: discord.Interaction, button: discord.ui.Button): 

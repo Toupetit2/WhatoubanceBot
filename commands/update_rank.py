@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from utils.jsonStorage import load_data, save_data
 import tftAPI
-import discordAPI
+import rate_limiter
 
 async def update_rank(interaction: discord.Interaction, member: discord.Member):
     data = load_data()
@@ -18,20 +18,28 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
 
     current_rank = tftAPI.get_tft_rank(puuid, cpid)
 
+    role_id = data.get(f"tft_rank_{old_rank}_role_id")
     if current_rank != old_rank:
-        role = interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id"))
+        role = interaction.guild.get_role(role_id)
         try:
             await member.add_roles(role)
         except discord.Forbidden:
             return "Le rôle est trop haut dans la hiérarchie."
-            return
+
         except discord.HTTPException as e:
             return f"Erreur lors de l'ajout du rôle : {e}"
-            return
 
         return f"<@{member.id}> a eu son rôle mis a jour !"
     else:
-        return f"<@{member.id}> avait déjà le bon role."
+        if role_id not in member.roles:
+            try:
+                await member.add_roles(role)
+            except discord.Forbidden:
+                return "Le rôle est trop haut dans la hiérarchie."
+    
+            except discord.HTTPException as e:
+                return f"Erreur lors de l'ajout du rôle : {e}"
+        return f"<@{member.id}> avait déjà le bon rôle."
 
 class UpdateRankView(discord.ui.View):
     def __init__(self):
@@ -65,6 +73,17 @@ def setup(bot):
 
         await interaction.response.send_message("", view=view)
 
+    @app_commands.guild_only()
+    @app_commands.default_permissions(administrator=True)
+    @bot.tree.command(name="update_rank_everyone", description="Met a jour le rank de tout le serveur")
+    async def update_rank_everyone_command(interaction: discord.Interaction):
+
+        members = interaction.guild.members
+
+        for member in members:
+            await update_rank(interaction, member)
+            
+
+        await interaction.response.send_message("")
 
 
-    
