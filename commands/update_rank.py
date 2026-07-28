@@ -70,7 +70,8 @@ def setup(bot):
 
         view = UpdateRankView()
 
-        await interaction.response.send_message("", view=view)
+        await interaction.channel.send(view=view)
+        await interaction.response.send_message("Bouton envoyé !", ephemeral=True)
 
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
