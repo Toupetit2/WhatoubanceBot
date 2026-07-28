@@ -3,13 +3,11 @@ from discord import app_commands
 from utils.jsonStorage import load_data, save_data
 import tftAPI
 import rate_limiter
-
 async def update_rank(interaction: discord.Interaction, member: discord.Member):
     data = load_data()
     member_id = str(member.id)
 
     if member_id not in data["riot_links"]:
-        
         return f"<@{member.id}> n'a pas lié son compte riot."
 
     old_rank = data["riot_links"][member_id]["tft_rank"]
@@ -19,26 +17,26 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
     current_rank = tftAPI.get_tft_rank(puuid, cpid)
 
     role_id = data.get(f"tft_rank_{old_rank}_role_id")
+    role = interaction.guild.get_role(role_id)
+
     if current_rank != old_rank:
-        role = interaction.guild.get_role(role_id)
         try:
             await member.add_roles(role)
         except discord.Forbidden:
             return "Le rôle est trop haut dans la hiérarchie."
-
         except discord.HTTPException as e:
             return f"Erreur lors de l'ajout du rôle : {e}"
 
         return f"<@{member.id}> a eu son rôle mis a jour !"
     else:
-        if role_id not in member.roles:
+        if role not in member.roles: 
             try:
                 await member.add_roles(role)
             except discord.Forbidden:
                 return "Le rôle est trop haut dans la hiérarchie."
-    
             except discord.HTTPException as e:
                 return f"Erreur lors de l'ajout du rôle : {e}"
+
         return f"<@{member.id}> avait déjà le bon rôle."
 
 class UpdateRankView(discord.ui.View):
