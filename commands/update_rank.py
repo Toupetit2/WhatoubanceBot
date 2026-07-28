@@ -36,6 +36,7 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
                 return "Le rôle est trop haut dans la hiérarchie."
             except discord.HTTPException as e:
                 return f"Erreur lors de l'ajout du rôle : {e}"
+            return f"<@{member.id}> a eu son rôle mis a jour !"
 
         return f"<@{member.id}> avait déjà le bon rôle."
 
