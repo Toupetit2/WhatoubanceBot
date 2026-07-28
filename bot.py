@@ -6,6 +6,9 @@ import utils.jsonStorage
 import commands.antiSpam as antiSpam
 from views.link_view import LinkView
 from commands.update_rank import UpdateRankView
+from discordAPI import DiscordAPI
+from twitchBot import TwitchBot
+from twitchVerify import TwitchLinker
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -16,12 +19,13 @@ class Bot(commands.Bot):
 
         super().__init__(command_prefix="!", intents=intents)
 
+        self.discord_api = DiscordAPI()
+        self.twitch_bot = TwitchBot()
+        self.twitch_linker = TwitchLinker(self.bot)
         self.background_task = None
-        self.twitch_bot = None
         self.link_view_manager = None
         self.anti_spam = antiSpam.AntiSpam()
-        self.discordAPI = None
-        self.twitch_linker = None
+        self.anti_spam.setup(self.bot)
 
 
     async def setup_hook(self):
