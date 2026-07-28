@@ -25,7 +25,7 @@ class Bot(commands.Bot):
         self.background_task = None
         self.link_view_manager = None
         self.anti_spam = antiSpam.AntiSpam()
-        self.anti_spam.setup(self.bot)
+        self.anti_spam.setup(self)
 
 
     async def setup_hook(self):
