@@ -5,7 +5,7 @@ import asyncio
 from bot import Bot
 from flaskApp import FlaskApp
 from commands.antiSpam import AntiSpam
-import bot_setup
+from bot_setup import bot_setup
 
 
 dotenv.load_dotenv()
@@ -21,7 +21,7 @@ flask_app = FlaskApp(bot.twitch_linker)
     
 async def main():
     bot_setup(bot)
-    
+
     threading.Thread(target=flask_app.run, daemon=True).start()
 
     async with bot:
