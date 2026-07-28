@@ -77,13 +77,17 @@ def setup(bot):
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="update_rank_everyone", description="Met a jour le rank de tout le serveur")
     async def update_rank_everyone_command(interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
 
         members = interaction.guild.members
+        updated_count = 0
 
         for member in members:
-            await update_rank(interaction, member)
-            
+            result = await update_rank(interaction, member)
+            print(f"{member.id}: {result}", flush=True)
+            updated_count += 1
 
-        await interaction.response.send_message("")
-
-
+        await interaction.followup.send(
+            f"Mise à jour terminée pour {updated_count} membre(s) !",
+            ephemeral=True
+        )
