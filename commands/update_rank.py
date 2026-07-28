@@ -84,7 +84,6 @@ def setup(bot):
 
         for member in members:
             result = await update_rank(interaction, member)
-            print(f"{member.id}: {result}", flush=True)
             updated_count += 1
 
         await interaction.followup.send(
