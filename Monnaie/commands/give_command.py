@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-import Monnaie.give as give
+import monnaie.give as give
 
 def setup(bot):
     @app_commands.guild_only()
