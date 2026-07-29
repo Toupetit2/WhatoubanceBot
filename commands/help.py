@@ -17,7 +17,7 @@ def setup(bot):
 ### Commandes TempVoice
 **/setup_temp_voice** category                                             - Rajoute un salon "Créer un salon" dans la catégorie
 ### Commandes Rôles
-**/setup_link wtb_role**                                                            - Envoie le message de link riot et twitch, donne le role wtb_role après la vérification twitch (si wtb tag)
+**/setup_link**wtb_role notif_twitch_role                           - Envoie le message de link riot et twitch, donne le role wtb_role après la vérification twitch (si wtb tag)
 **/setup_rank_roles** iron bronze silver gold plat...         - Permet de donner les bons roles quand on link avec riot
 **/update_rank** member                                                        - Met a jour le rank du membre si il a lié son compte
 **/setup_update_rank_button**                                            - Envoie un bouton pour update son rank
