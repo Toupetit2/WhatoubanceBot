@@ -100,11 +100,25 @@ class TwitchBot:
         self.data = utils.jsonStorage.load_data()
         live_streams = self.get_live_streams()
         for streamer in self.data["streamers"]:
-            if streamer in live_streams and not self.data["streamers"][streamer]:
-                embed = self.create_stream_embed(streamer)
-                bot.loop.create_task(self.discordAPI.send_message(bot, self.data["streamers_embed_channel"][streamer], self.data["streamers_embed_message"][streamer],embed=embed, delete_after=86400))
-                self.data["streamers"][streamer] = True
-            elif streamer not in live_streams and self.data["streamers"][streamer]:
-                self.data["streamers"][streamer] = False
-            
+            print(f"1 - CHECK PING STREAM FOR {streamer}", flush=True)
+            try:
+                if streamer in live_streams and not self.data["streamers"][streamer]:
+                    print(f"2 - {streamer} IS LIVE", flush=True)
+                    embed = self.create_stream_embed(streamer)
+                    if embed is None:
+                        continue
+                    print(f"3 - {streamer} NOTIFICATION SEND", flush=True)
+                    bot.loop.create_task(self.discordAPI.send_message(
+                        bot,
+                        self.data["streamers_embed_channel"][streamer],
+                        self.data["streamers_embed_message"][streamer],
+                        embed=embed,
+                        delete_after=86400
+                    ))
+                    self.data["streamers"][streamer] = True
+                elif streamer not in live_streams and self.data["streamers"][streamer]:
+                    self.data["streamers"][streamer] = False
+            except Exception as e:
+                print(f"[check_streams_pings] erreur pour {streamer}: {e}", flush=True)
+
         utils.jsonStorage.save_data(self.data)
