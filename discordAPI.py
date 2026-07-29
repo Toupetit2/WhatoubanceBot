@@ -11,7 +11,7 @@ TOKEN = os.getenv("TOKEN_DISCORD")
 
 class DiscordAPI:
 
-    async def send_message(self, bot, channel_id, message=None, embed=None, view=None):
+    async def send_message(self, bot, channel_id, message=None, embed=None, view=None, delete_after=0):
         # channel_id -> int, the id of the channel to send the message in
         # message -> str, the message to send
         # embed -> discord.Embed, the embed to send
@@ -20,7 +20,7 @@ class DiscordAPI:
         channel = bot.get_channel(channel_id)
 
         if channel:
-            return await channel.send(content=message, embed=embed, view=view)
+            return await channel.send(content=message, embed=embed, view=view, delete_after=delete_after)
     
     async def send_dm(self, bot, user_id, message):
         # user_id -> int, the id of the user to send the dm to
