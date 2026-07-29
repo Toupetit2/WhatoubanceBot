@@ -14,4 +14,4 @@ async def bot_setup(bot):
     setup_update_rank(bot)
     await setup_temp_voice(bot)
 
-    setup_give(bot)
+    #setup_give(bot)
