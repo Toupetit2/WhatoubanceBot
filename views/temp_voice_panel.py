@@ -95,3 +95,15 @@ class ControlPanel(discord.ui.View):
         if not await self.check_owner(interaction):
             return
         await interaction.response.send_modal(LimitModal(self.channel))
+
+    @discord.ui.button(label="Fermer/Ouvrir", style=discord.ButtonStyle.blurple)
+    async def close_open_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        overwrite = self.channel.overwrites_for(interaction.guild.default_role)
+        if overwrite.connect != False: #Si ouvert
+            overwrite.connect = False
+            await self.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
+            await interaction.response.send_message(f"🔒 {self.channel.name} est maintenant fermé.", ephemeral=True)
+        else:
+            overwrite.connect = None
+            await self.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
+            await interaction.response.send_message(f"🔓 {self.channel.name} est maintenant ouvert.", ephemeral=True)

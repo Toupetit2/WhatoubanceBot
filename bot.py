@@ -2,6 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 import time
+import os
 import utils.jsonStorage
 import commands.antiSpam as antiSpam
 from views.link_view import LinkView
@@ -38,8 +39,8 @@ class Bot(commands.Bot):
     async def on_ready(self):
         print(f"INFO - Connected as {self.user}", flush=True)
 
-        guild_id = self.guilds[1].id # first server on the list
-
+        #guild_id = self.guilds[1].id
+        guild_id = int(os.getenv("GUILD_ID"))
         data = utils.jsonStorage.load_data()
         data["guild_id"] = guild_id
         utils.jsonStorage.save_data(data)
@@ -86,7 +87,7 @@ class Bot(commands.Bot):
 
     async def stream_check_loop(self):
         while not self.is_closed():
-            print("INFO - Checking streams...aa")
+            print("INFO - Checking streams...")
             self.twitch_bot.check_streams_pings(self)
             await asyncio.sleep(60)
         print("INFO - Stream check loop has been stopped because the bot is closed.")
