@@ -7,6 +7,7 @@ import utils.jsonStorage
 import commands.antiSpam as antiSpam
 from views.link_view import LinkView
 from commands.update_rank import UpdateRankView
+from commands.delete_rank import DeleteRankView
 from discordAPI import DiscordAPI
 from twitchBot import TwitchBot
 from twitchVerify import TwitchLinker
@@ -54,6 +55,7 @@ class Bot(commands.Bot):
 
         self.add_view(LinkView(self.discord_api, self.twitch_linker))
         self.add_view(UpdateRankView())
+        self.add_view(DeleteRankView())
 
     
     async def on_message(self, message):
