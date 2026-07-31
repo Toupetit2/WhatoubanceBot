@@ -32,33 +32,33 @@ class DiscordAPI:
         if user:
             await user.send(content=message)
     
-async def give_role(self, bot, guild_id, user_id, role_id, max_retries=3):
-    # guild_id -> int, the id of the guild where the role is
-    # user_id -> int, the id of the user to give the role to
-    # role_id -> int, the id of the role to give
+    async def give_role(self, bot, guild_id, user_id, role_id, max_retries=3):
+        # guild_id -> int, the id of the guild where the role is
+        # user_id -> int, the id of the user to give the role to
+        # role_id -> int, the id of the role to give
 
-    guild = bot.get_guild(guild_id)
-    if not guild:
-        raise ValueError(f"Guild {guild_id} introuvable")
+        guild = bot.get_guild(guild_id)
+        if not guild:
+            raise ValueError(f"Guild {guild_id} introuvable")
 
-    role = guild.get_role(role_id)
-    if role is None:
-        raise ValueError(f"Rôle {role_id} introuvable")
+        role = guild.get_role(role_id)
+        if role is None:
+            raise ValueError(f"Rôle {role_id} introuvable")
 
-    last_error = None
-    for attempt in range(1, max_retries + 1):
-        try:
-            member = guild.get_member(user_id) or await guild.fetch_member(user_id)
-            await member.add_roles(role)
-            return
-        except discord.NotFound as e:
-            last_error = e
-        except discord.HTTPException as e:
-            last_error = e
-            if attempt < max_retries:
-                await asyncio.sleep(5 * attempt)
+        last_error = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                member = guild.get_member(user_id) or await guild.fetch_member(user_id)
+                await member.add_roles(role)
+                return
+            except discord.NotFound as e:
+                last_error = e
+            except discord.HTTPException as e:
+                last_error = e
+                if attempt < max_retries:
+                    await asyncio.sleep(5 * attempt)
 
-    raise last_error
+        raise last_error
 
     async def remove_role(self, bot, guild_id, user_id, role_id):
         # guild_id -> int, the id of the guild where the role is
