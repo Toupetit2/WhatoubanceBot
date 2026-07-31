@@ -37,10 +37,13 @@ class Bot(commands.Bot):
         if self.link_view_manager is not None:
             await self.link_view_manager.init()
 
+    async def on_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+        import traceback
+        traceback.print_exception(type(error), error, error.__traceback__)
+
     async def on_ready(self):
         print(f"INFO - Connected as {self.user}", flush=True)
 
-        #guild_id = self.guilds[1].id
         guild_id = int(os.getenv("GUILD_ID"))
         data = utils.jsonStorage.load_data()
         data["guild_id"] = guild_id
@@ -93,3 +96,4 @@ class Bot(commands.Bot):
             self.twitch_bot.check_streams_pings(self)
             await asyncio.sleep(60)
         print("INFO - Stream check loop has been stopped because the bot is closed.")
+

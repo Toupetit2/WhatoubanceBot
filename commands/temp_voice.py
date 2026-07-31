@@ -42,6 +42,8 @@ class TempVoice(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
+        if before.channel == after.channel:
+            return
         # Create
         if after.channel and self.bot.temp_voice_channel_id and after.channel.id == self.bot.temp_voice_channel_id:
             new_channel_name = f"Salon de {member.display_name}"
