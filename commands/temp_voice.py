@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import utils.jsonStorage as utils
 import views.temp_voice_panel
-
+import whitelist
 
 class TempVoice(commands.Cog):
     def __init__(self, bot):
@@ -101,6 +101,28 @@ class TempVoice(commands.Cog):
                 new_owner = channel.members[0]
 
             if new_owner:
+                old_owner_id = panel.owner_id
+
+                try:
+                    await channel.set_permissions(member, overwrite=None)
+
+                    old_whitelist = whitelist.get_whitelist(old_owner_id)
+                    for uid in old_whitelist:
+                        m = channel.guild.get_member(uid)
+                        if m is not None and m.id != new_owner.id:
+                            await channel.set_permissions(m, overwrite=None)
+
+                    await channel.set_permissions(new_owner, connect=True)
+
+                    new_whitelist = whitelist.get_whitelist(new_owner.id)
+                    for uid in new_whitelist:
+                        m = channel.guild.get_member(uid)
+                        if m is not None:
+                            await channel.set_permissions(m, connect=True)
+
+                except discord.HTTPException as e:
+                    print(f"Erreur lors du transfert de permissions : {e}")
+
                 panel.owner_id = new_owner.id
                 print(self.join_order)
                 await channel.send(
