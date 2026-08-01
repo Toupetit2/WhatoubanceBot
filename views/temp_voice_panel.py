@@ -116,10 +116,17 @@ class ChangeOwnerView(discord.ui.View):
                 member = self.channel.guild.get_member(member_id)
                 if member is not None and member.id != new_owner.id:
                     await self.channel.set_permissions(member, overwrite=None)
-            
+
             await self.channel.set_permissions(
                 new_owner, connect=True
             )
+
+            new_whitelist = whitelist.get_whitelist(new_owner.id)
+            for member_id in new_whitelist:
+                member = self.channel.guild.get_member(member_id)
+                if member is not None:
+                    await self.channel.set_permissions(member, connect=True)
+
         except discord.HTTPException as e:
             await interaction.response.send_message(
                 f"Erreur lors du changement de chef : {e}", ephemeral=True
@@ -127,6 +134,7 @@ class ChangeOwnerView(discord.ui.View):
             return
 
         self.control_panel.owner_id = new_owner.id
+        await self.control_panel.resend()
 
         await interaction.response.defer()
         await interaction.delete_original_response()
@@ -137,14 +145,17 @@ class ChangeOwnerView(discord.ui.View):
             )
         except discord.HTTPException:
             pass
+
         
+
 class WhitelistModal(discord.ui.Modal, title="Whitelist"):
-    def __init__(self, channel: discord.VoiceChannel, owner_id: int,  guild: discord.Guild):
+    def __init__(self, channel: discord.VoiceChannel, target_id: int, guild: discord.Guild, control_panel: "ControlPanel"):
         super().__init__()
         self.channel = channel
-        self.owner_id = owner_id
+        self.target_id = target_id
+        self.control_panel = control_panel
 
-        current_ids = whitelist.get_whitelist(owner_id)
+        current_ids = whitelist.get_whitelist(target_id)
         default_members = [
             discord.Object(id=uid) for uid in current_ids
             if guild.get_member(uid) is not None
@@ -158,7 +169,7 @@ class WhitelistModal(discord.ui.Modal, title="Whitelist"):
         )
 
         self.label = discord.ui.Label(
-            text="Membres à ajouter/retirer de la whitelist",
+            text="Membres de ta whitelist : ",
             component=self.user_select,
         )
 
@@ -167,38 +178,44 @@ class WhitelistModal(discord.ui.Modal, title="Whitelist"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
 
-        added, removed, skipped_self = [], [], False
+        old_ids = set(whitelist.get_whitelist(self.target_id))
+        selected_ids = {member.id for member in self.user_select.values if not member.bot and member.id != self.target_id}
 
-        for member in self.user_select.values:
-            if member.bot:
-                continue
+        to_add = selected_ids - old_ids
+        to_remove = old_ids - selected_ids
 
-            if member.id == self.owner_id:
-                skipped_self = True
-                continue
+        is_active_owner = self.control_panel.owner_id == self.target_id
 
-            if whitelist.is_in_whitelist(self.owner_id, member.id):
-                whitelist.remove_from_whitelist(self.owner_id, member.id)
-                await self.channel.set_permissions(member, overwrite=None)
-                removed.append(member.mention)
-            else:
-                whitelist.add_to_whitelist(self.owner_id, member.id)
-                await self.channel.set_permissions(member, connect=True)
+        added, removed = [], []
+
+        for uid in to_add:
+            whitelist.add_to_whitelist(self.target_id, uid)
+            member = interaction.guild.get_member(uid)
+            if member is not None:
                 added.append(member.mention)
+                if is_active_owner:
+                    await self.channel.set_permissions(member, connect=True)
+
+        for uid in to_remove:
+            whitelist.remove_from_whitelist(self.target_id, uid)
+            member = interaction.guild.get_member(uid)
+            if member is not None:
+                removed.append(member.mention)
+                if is_active_owner:
+                    await self.channel.set_permissions(member, overwrite=None)
 
         parts = []
         if added:
-            parts.append(f"✅ Ajouté(s) à la whitelist : {', '.join(added)}")
+            parts.append(f"✅ Ajouté(s) à ta whitelist : {', '.join(added)}")
         if removed:
-            parts.append(f"❌ Retiré(s) de la whitelist : {', '.join(removed)}")
-        if skipped_self:
-            parts.append("ℹ️ Tu es déjà propriétaire, pas besoin de t'ajouter à ta propre whitelist.")
+            parts.append(f"❌ Retiré(s) de ta whitelist : {', '.join(removed)}")
+        if not is_active_owner:
+            parts.append("ℹ️ Tu n'es pas le chef actuel de ce salon : ta whitelist sera appliquée dès que tu le deviendras.")
 
         await interaction.followup.send(
             "\n".join(parts) if parts else "Aucune modification.",
             ephemeral=True,
         )
-
 
 class ControlPanel(discord.ui.View):
     def __init__(self, channel: discord.VoiceChannel, owner_id: int):
@@ -206,6 +223,18 @@ class ControlPanel(discord.ui.View):
         self.channel = channel
         self.owner_id = owner_id
         self.whitelist_active = False
+
+    async def resend(self):
+        if self.message is not None:
+            try:
+                await self.message.delete()
+            except discord.HTTPException:
+                pass
+
+        self.message = await self.channel.send(
+            f"<@{self.owner_id}> - Commandes pour gérer le salon : ",
+            view=self,
+        )
 
     async def check_owner(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.owner_id:
@@ -227,12 +256,9 @@ class ControlPanel(discord.ui.View):
             return
         await interaction.response.send_modal(RenameModal(self.channel))
 
-    @discord.ui.button(label="Ajouter/Retirer de la Whitelist", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="Ajouter/Retirer de la Whitelist", style=discord.ButtonStyle.green)
     async def whitelist_add_member_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not await self.check_owner(interaction):
-            return
-
-        await interaction.response.send_modal(WhitelistModal(self.channel, self.owner_id, interaction.guild))
+        await interaction.response.send_modal(WhitelistModal(self.channel, interaction.user.id, interaction.guild, self))
 
     @discord.ui.button(label="Passation de Chef", style=discord.ButtonStyle.blurple)
     async def change_owner_button(self, interaction: discord.Interaction, button: discord.ui.Button):

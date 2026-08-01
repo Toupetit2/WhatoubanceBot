@@ -50,11 +50,14 @@ class TempVoice(commands.Cog):
             new_channel = await after.channel.category.create_voice_channel(new_channel_name)
             await member.move_to(new_channel)
 
+            await new_channel.set_permissions(member, connect=True)
+
             self.temp_channels.add(new_channel.id)
             self.persist()
 
             view = views.temp_voice_panel.ControlPanel(new_channel, member.id)
-            await new_channel.send(f"<@{member.id}> - Commandes pour gérer le salon : ", view=view)
+            panel_message = await new_channel.send(f"<@{member.id}> - Commandes pour gérer le salon : ", view=view)
+            view.message = panel_message
 
             self.panels[new_channel.id] = view
 
@@ -129,6 +132,7 @@ class TempVoice(commands.Cog):
                     f"👑 {member.display_name} a quitté le salon. "
                     f"{new_owner.mention} est le nouveau propriétaire (présent depuis le plus longtemps).",
                 )
+                await panel.resend()
 
 async def setup(bot):
     await bot.add_cog(TempVoice(bot))
