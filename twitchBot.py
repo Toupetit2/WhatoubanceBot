@@ -98,7 +98,11 @@ class TwitchBot:
 
     def check_streams_pings(self, bot):
         self.data = utils.jsonStorage.load_data()
-        live_streams = self.get_live_streams()
+        try:
+            live_streams = self.get_live_streams()
+        except Exception as e:
+            print(f"[check_streams_pings] erreur get_live_streams: {e}", flush=True)
+            return
         for streamer in self.data["streamers"]:
             print(f"1 - CHECK PING STREAM FOR {streamer}", flush=True)
             try:

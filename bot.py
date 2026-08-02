@@ -11,6 +11,7 @@ from commands.delete_rank import DeleteRankView
 from discordAPI import DiscordAPI
 from twitchBot import TwitchBot
 from twitchVerify import TwitchLinker
+import traceback
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -92,8 +93,12 @@ class Bot(commands.Bot):
 
     async def stream_check_loop(self):
         while not self.is_closed():
-            print("INFO - Checking streams...")
-            self.twitch_bot.check_streams_pings(self)
+            try:
+                print("INFO - Checking streams...")
+                self.twitch_bot.check_streams_pings(self)
+            except Exception as e:
+                print(f"ERROR - Exception in stream_check_loop: {e}", flush=True)
+                traceback.print_exc()
             await asyncio.sleep(60)
         print("INFO - Stream check loop has been stopped because the bot is closed.")
 
