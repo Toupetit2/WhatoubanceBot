@@ -16,7 +16,7 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
 
     current_rank = tftAPI.get_tft_rank(puuid, cpid)
 
-    role_id = data.get(f"tft_rank_{old_rank}_role_id")
+    role_id = data.get(f"tft_rank_{current_rank}_role_id")
     role = interaction.guild.get_role(role_id)
 
     if current_rank != old_rank:
