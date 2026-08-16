@@ -1,8 +1,9 @@
 import discord
 from discord import app_commands
 from utils.jsonStorage import load_data, save_data
-import tftAPI
-import rate_limiter
+from tftAPI import get_tft_rank, RiotAPIError
+import asyncio
+
 async def update_rank(interaction: discord.Interaction, member: discord.Member):
     data = load_data()
     member_id = str(member.id)
@@ -14,14 +15,20 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
     puuid = data["riot_links"][member_id]["puuid"]
     cpid = data["riot_links"][member_id]["cpid"]
 
-    current_rank = tftAPI.get_tft_rank(puuid, cpid)
+    try:
+        current_rank = await asyncio.to_thread(get_tft_rank, puuid, cpid)
+    except RiotAPIError as e:
+        return f"<@{member.id}> : erreur API Riot ({e})"
 
     role_id = data.get(f"tft_rank_{current_rank}_role_id")
     role = interaction.guild.get_role(role_id)
 
     if current_rank != old_rank:
+        data["riot_links"][member_id]["tft_rank"] = current_rank
+        save_data(data)
         try:
             await member.add_roles(role)
+            await member.remove_roles(interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id")))
         except discord.Forbidden:
             return "Le rôle est trop haut dans la hiérarchie."
         except discord.HTTPException as e:
@@ -81,12 +88,27 @@ def setup(bot):
 
         members = interaction.guild.members
         updated_count = 0
+        errors = 0
 
-        for member in members:
-            result = await update_rank(interaction, member)
-            updated_count += 1
+        for i, member in enumerate(members):
+            try:
+                await update_rank(interaction, member)
+                updated_count += 1
+            except Exception as e:
+                errors += 1
+                print(f"Erreur pour {member}: {e}")
+
+            await asyncio.sleep(0.3)
+
+            if (i + 1) % 5 == 0 or i==0:
+                try:
+                    await interaction.edit_original_response(
+                        content=f"Progression : {i + 1}/{len(members)} membres traités..."
+                    )
+                except discord.HTTPException:
+                    pass
 
         await interaction.followup.send(
-            f"Mise à jour terminée pour {updated_count} membre(s) !",
+            f"Mise à jour terminée : {updated_count} succès, {errors} erreur(s) sur {len(members)} membres.",
             ephemeral=True
         )
