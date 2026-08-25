@@ -13,6 +13,8 @@ from twitchBot import TwitchBot
 from twitchVerify import TwitchLinker
 import traceback
 
+GUILD_ID = int(os.getenv("GUILD_ID"))
+
 class Bot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
@@ -30,8 +32,9 @@ class Bot(commands.Bot):
         self.anti_spam = antiSpam.AntiSpam()
         self.anti_spam.setup(self)
 
-
     async def setup_hook(self):
+        guild = discord.Object(id=GUILD_ID)
+        self.tree.copy_global_to(guild=guild)
         synced = await self.tree.sync()
         print(f"INFO - Synchronized commands: {[cmd.name for cmd in synced]}")
 
