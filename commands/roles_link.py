@@ -36,7 +36,7 @@ def setup(bot, discord_api, twitch_linker):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @bot.tree.command(name="setup_rank_roles", description="Configurer les rôles de rang TFT")
-    async def setup_rank_roles_command(interaction: discord.Interaction,unranked_role: discord.Role, iron_role: discord.Role, bronze_role: discord.Role, silver_role: discord.Role, gold_role: discord.Role, platinum_role: discord.Role, emerald_role: discord.Role, diamond_role: discord.Role, master_role: discord.Role, grandmaster_role: discord.Role, challenger_role: discord.Role):
+    async def setup_rank_roles_command(interaction: discord.Interaction,unranked_role: discord.Role, iron_role: discord.Role, bronze_role: discord.Role, silver_role: discord.Role, gold_role: discord.Role, platinum_role: discord.Role, emerald_role: discord.Role, diamond_role: discord.Role, master_role: discord.Role, grandmaster_role: discord.Role, challenger_role: discord.Role, club_role: discord.Role):
         data = load_data()
         data["guild_id"] = interaction.guild.id
         data["tft_rank_UNRANKED_role_id"] = unranked_role.id
@@ -50,6 +50,7 @@ def setup(bot, discord_api, twitch_linker):
         data["tft_rank_MASTER_role_id"] = master_role.id
         data["tft_rank_GRANDMASTER_role_id"] = grandmaster_role.id
         data["tft_rank_CHALLENGER_role_id"] = challenger_role.id
+        data["club_member_role_id"] = club_role.id
         save_data(data)
 
         await interaction.response.send_message(

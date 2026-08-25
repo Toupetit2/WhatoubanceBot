@@ -3,6 +3,8 @@ from discord import app_commands
 from utils.jsonStorage import load_data, save_data
 from tftAPI import get_tft_rank, RiotAPIError
 import asyncio
+from in_club import get_riot_id_from_puuid, in_wtb_club
+import requests
 
 async def update_rank(interaction: discord.Interaction, member: discord.Member):
     data = load_data()
@@ -19,6 +21,26 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
         current_rank = await asyncio.to_thread(get_tft_rank, puuid, cpid)
     except RiotAPIError as e:
         return f"<@{member.id}> : erreur API Riot ({e})"
+
+    # Vérification du club WTB
+    try:
+        riot_id = await asyncio.to_thread(get_riot_id_from_puuid, puuid)
+
+        if await asyncio.to_thread(in_wtb_club, riot_id):
+            club_role_id = data.get("club_member_role_id")
+            club_role = interaction.guild.get_role(int(club_role_id)) if club_role_id else None
+
+            if club_role and club_role not in member.roles:
+                await member.add_roles(club_role)
+
+    except requests.RequestException as e:
+        print(f"Erreur récupération Riot ID pour {member}: {e}", flush=True)
+
+    except discord.Forbidden:
+        return "Le rôle club est trop haut dans la hiérarchie."
+
+    except discord.HTTPException as e:
+        return f"Erreur lors de l'ajout du rôle club : {e}"
 
     role_id = data.get(f"tft_rank_{current_rank}_role_id")
     role = interaction.guild.get_role(role_id)

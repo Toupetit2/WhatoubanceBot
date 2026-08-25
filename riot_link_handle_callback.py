@@ -4,6 +4,7 @@ import requests
 import asyncio
 import utils.jsonStorage
 import tftAPI
+from in_club import give_wtb_role
 
 RSO_CLIENT_ID = os.getenv("RSO_CLIENT_ID")
 RSO_CLIENT_SECRET = os.getenv("RSO_CLIENT_SECRET")
@@ -49,6 +50,8 @@ def handle_callback(discordAPI, bot, code, state):
     account_info_response = requests.get("https://europe.api.riotgames.com/riot/account/v1/accounts/me", headers=headers, timeout=10)
     account_info = account_info_response.json()
     print(f"INFO - Riot account info: {account_info}, response={account_info_response.status_code}", flush=True)
+
+
     tft_rank = tftAPI.get_tft_rank(account_info.get("puuid"), user_info.get("cpid"))
 
     data = utils.jsonStorage.load_data()
@@ -59,6 +62,10 @@ def handle_callback(discordAPI, bot, code, state):
     }
 
     print(f"INFO - Riot account info saved for user {state}", flush=True)
+
+    # Club WTB
+    give_wtb_role(bot, state, account_info)
+
     #give role based on rank
     if tft_rank:
         print(tft_rank, flush=True)
