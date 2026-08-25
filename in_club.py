@@ -25,19 +25,25 @@ def in_wtb_club(riotID):
 
     response = requests.get(url)
 
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    if response.status_code != 200:
         print("Error GGtech API:", response.text, flush=True)
         return False
 
-    data = data["returnData"]["data"]
+    data = response.json()["returnData"]["data"]
+
+    target = riotID.strip().casefold()
 
     for player in data:
-        if player.get("gameNicks"):
-            for account in player["gameNicks"]:
-                if riotID == account["nick"]:
-                    return True
+        display_name = player.get("displayName", "").strip().casefold()
+
+        if display_name == target:
+            return True
+
+        for account in player.get("gameNicks", []):
+            nick = account.get("nick", "").strip().casefold()
+
+            if nick == target:
+                return True
 
     return False
 
