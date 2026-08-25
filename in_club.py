@@ -63,10 +63,19 @@ def give_wtb_role(bot, state, account_info):
         print("WARN - club_member_role_id n'est pas configuré", flush=True)
         return False
 
-    coro = bot.add_roles(
-        bot.get_guild(int(data["guild_id"])).get_member(int(state)),
-        bot.get_guild(int(data["guild_id"])).get_role(int(role_id))
-    )
+    guild = bot.get_guild(int(data["guild_id"]))
+    member = guild.get_member(int(state))
+    role = guild.get_role(int(role_id))
+
+    if not member:
+        print(f"WARN - Membre Discord {state} introuvable", flush=True)
+        return False
+
+    if not role:
+        print(f"WARN - Rôle {role_id} introuvable", flush=True)
+        return False
+
+    coro = member.add_roles(role)
 
     future = asyncio.run_coroutine_threadsafe(coro, bot.loop)
 
