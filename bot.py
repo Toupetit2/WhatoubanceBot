@@ -90,7 +90,7 @@ class Bot(commands.Bot):
             if admin_channel_id:
                 admin_channel = self.get_channel(admin_channel_id)
                 if admin_channel:
-                    await admin_channel.send(f"⚠️ {message.author.mention} a été expulsé pour spam.")
+                    await admin_channel.send(f"⚠️ {message.author.display_name} (@{message.author.name}) a été expulsé pour spam. `{message.author.id}`")
 
         await self.process_commands(message)
 
