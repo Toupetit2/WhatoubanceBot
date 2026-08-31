@@ -48,13 +48,18 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
     if current_rank != old_rank:
         data["riot_links"][member_id]["tft_rank"] = current_rank
         save_data(data)
+
+        old_role = interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id"))
+        new_roles = [r for r in member.roles if r != old_role]
+        if role not in new_roles:
+            new_roles.append(role)
+
         try:
-            await member.add_roles(role)
-            await member.remove_roles(interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id")))
+            await member.edit(roles=new_roles)
         except discord.Forbidden:
             return "Le rôle est trop haut dans la hiérarchie.", False
         except discord.HTTPException as e:
-            return f"Erreur lors de l'ajout du rôle : {e}", False
+            return f"Erreur lors de la mise à jour du rôle : {e}", False
 
         return f"<@{member.id}> a eu son rôle mis a jour !", True
     else:
@@ -114,7 +119,7 @@ def setup(bot):
 
         lock = asyncio.Lock()
 
-        semaphore = asyncio.Semaphore(5)
+        semaphore = asyncio.Semaphore(20)
 
         async def process(member):
             nonlocal updated_count, changed_count, errors, done
@@ -137,7 +142,7 @@ def setup(bot):
                                 )
                             except discord.HTTPException:
                                 pass
-                            
+
                     await asyncio.sleep(0.05)
 
         await asyncio.gather(*(process(m) for m in members))
