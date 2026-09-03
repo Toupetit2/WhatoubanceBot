@@ -5,6 +5,7 @@ from tftAPI import get_tft_rank, RiotAPIError
 import asyncio
 from in_club import get_riot_id_from_puuid, in_wtb_club
 import requests
+from discord.ext import tasks
 
 async def update_rank(interaction: discord.Interaction, member: discord.Member):
     data = load_data()
@@ -152,3 +153,60 @@ def setup(bot):
             f"{errors} erreur(s) sur {total} membres.",
             ephemeral=True
         )
+
+
+    @tasks.loop(hours=1)
+    async def auto_update_rank_everyone():
+        for guild in bot.guilds:
+            members = guild.members
+            total = len(members)
+            updated_count = 0
+            changed_count = 0
+            errors = 0
+
+            semaphore = asyncio.Semaphore(20)
+
+            class _FakeInteraction:
+                def __init__(self, guild):
+                    self.guild = guild
+
+            fake_interaction = _FakeInteraction(guild)
+
+            async def process(member):
+                nonlocal updated_count, changed_count, errors
+                async with semaphore:
+                    try:
+                        _, changed = await update_rank(fake_interaction, member)
+                        updated_count += 1
+                        if changed:
+                            changed_count += 1
+                    except Exception as e:
+                        errors += 1
+                        print(f"Erreur pour {member}: {e}")
+                    finally:
+                        await asyncio.sleep(0.05)
+
+            await asyncio.gather(*(process(m) for m in members))
+
+            print(
+                f"[auto_update_rank] {guild.name} : {updated_count} succès "
+                f"({changed_count} changé(s)), {errors} erreur(s) sur {total} membres.",
+                flush=True
+            )
+
+    @auto_update_rank_everyone.before_loop
+    async def before_auto_update_rank_everyone():
+        await bot.wait_until_ready()
+
+    auto_update_rank_everyone.start()
+
+    @app_commands.guild_only()
+    @app_commands.default_permissions(administrator=True)
+    @bot.tree.command(name="toggle_auto_update_rank", description="Active ou désactive la mise à jour automatique horaire des ranks")
+    async def toggle_auto_update_rank_command(interaction: discord.Interaction):
+        if auto_update_rank_everyone.is_running():
+            auto_update_rank_everyone.cancel()
+            await interaction.response.send_message("🔴 Mise à jour automatique désactivée.", ephemeral=True)
+        else:
+            auto_update_rank_everyone.start()
+            await interaction.response.send_message("🟢 Mise à jour automatique activée (toutes les heures).", ephemeral=True)

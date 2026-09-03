@@ -24,8 +24,16 @@ class TwitchBot:
             self.data["streamers_embed_channel"] = {}
         if "streamers_embed_message" not in self.data:
             self.data["streamers_embed_message"] = {}
+
         for streamer in self.data["streamers"]:
-            self.data["streamers"][streamer] = False
+            try:
+                is_live_now = self.twitchAPI.is_live(streamer)
+            except Exception as e:
+                print(f"[init_status_streams] erreur is_live pour {streamer}: {e}", flush=True)
+                is_live_now = self.data["streamers"][streamer]  # garde l'ancien état si erreur API
+
+            self.data["streamers"][streamer] = is_live_now
+
         utils.jsonStorage.save_data(self.data)
 
     def create_stream_embed(self, username):
