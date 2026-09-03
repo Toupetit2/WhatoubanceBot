@@ -112,7 +112,6 @@ class TwitchBot:
             print(f"[check_streams_pings] erreur get_live_streams: {e}", flush=True)
             return
         for streamer in self.data["streamers"]:
-            print(f"1 - CHECK PING STREAM FOR {streamer}", flush=True)
             try:
                 if streamer in live_streams and not self.data["streamers"][streamer]:
                     print(f"2 - {streamer} IS LIVE", flush=True)
