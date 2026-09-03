@@ -156,7 +156,7 @@ def setup(bot):
             nonlocal updated_count, changed_count, errors, done
             async with semaphore:
                 try:
-                    _, changed = await update_rank(interaction, member, allow_downgrade=False)
+                    _, changed = await update_rank(interaction, member)
                     updated_count += 1
                     if changed:
                         changed_count += 1
