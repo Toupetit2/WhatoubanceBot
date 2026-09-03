@@ -114,11 +114,9 @@ class TwitchBot:
         for streamer in self.data["streamers"]:
             try:
                 if streamer in live_streams and not self.data["streamers"][streamer]:
-                    print(f"2 - {streamer} IS LIVE", flush=True)
                     embed = self.create_stream_embed(streamer)
                     if embed is None:
                         continue
-                    print(f"3 - {streamer} NOTIFICATION SEND", flush=True)
                     bot.loop.create_task(self.discordAPI.send_message(
                         bot,
                         self.data["streamers_embed_channel"][streamer],

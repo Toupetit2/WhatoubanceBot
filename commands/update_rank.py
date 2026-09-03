@@ -6,6 +6,9 @@ import asyncio
 from in_club import get_riot_id_from_puuid, in_wtb_club
 import requests
 from discord.ext import tasks
+import os
+
+GUILD_ID = int(os.getenv("GUILD_ID"))
 
 RANK_TIERS = [
     "IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM",
@@ -187,42 +190,42 @@ def setup(bot):
 
     @tasks.loop(hours=1)
     async def auto_update_rank_everyone():
-        for guild in bot.guilds:
-            members = guild.members
-            total = len(members)
-            updated_count = 0
-            changed_count = 0
-            errors = 0
+        guild = bot.get_guild(int(os.getenv("GUILD_ID")))
+        members = guild.members
+        total = len(members)
+        updated_count = 0
+        changed_count = 0
+        errors = 0
 
-            semaphore = asyncio.Semaphore(20)
+        semaphore = asyncio.Semaphore(20)
 
-            class _FakeInteraction:
-                def __init__(self, guild):
-                    self.guild = guild
+        class _FakeInteraction:
+            def __init__(self, guild):
+                self.guild = guild
 
-            fake_interaction = _FakeInteraction(guild)
+        fake_interaction = _FakeInteraction(guild)
 
-            async def process(member):
-                nonlocal updated_count, changed_count, errors
-                async with semaphore:
-                    try:
-                        _, changed = await update_rank(fake_interaction, member, allow_downgrade=False)
-                        updated_count += 1
-                        if changed:
-                            changed_count += 1
-                    except Exception as e:
-                        errors += 1
-                        print(f"Erreur pour {member}: {e}")
-                    finally:
-                        await asyncio.sleep(0.05)
+        async def process(member):
+            nonlocal updated_count, changed_count, errors
+            async with semaphore:
+                try:
+                    _, changed = await update_rank(fake_interaction, member, allow_downgrade=False)
+                    updated_count += 1
+                    if changed:
+                        changed_count += 1
+                except Exception as e:
+                    errors += 1
+                    print(f"Erreur pour {member}: {e}")
+                finally:
+                    await asyncio.sleep(0.05)
 
-            await asyncio.gather(*(process(m) for m in members))
+        await asyncio.gather(*(process(m) for m in members))
 
-            print(
-                f"[auto_update_rank] {guild.name} : {updated_count} succès "
-                f"({changed_count} changé(s)), {errors} erreur(s) sur {total} membres.",
-                flush=True
-            )
+        print(
+            f"[auto_update_rank] {guild.name} : {updated_count} succès "
+            f"({changed_count} changé(s)), {errors} erreur(s) sur {total} membres.",
+            flush=True
+        )
 
     @auto_update_rank_everyone.before_loop
     async def before_auto_update_rank_everyone():
