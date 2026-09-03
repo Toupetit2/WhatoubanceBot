@@ -7,7 +7,27 @@ from in_club import get_riot_id_from_puuid, in_wtb_club
 import requests
 from discord.ext import tasks
 
-async def update_rank(interaction: discord.Interaction, member: discord.Member):
+RANK_TIERS = [
+    "IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM",
+    "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"
+]
+
+def rank_value(rank: str) -> int:
+    """
+    Convertit un tier TFT (ex: 'GOLD') en valeur numérique comparable.
+    Retourne -1 si le rang est inconnu/non parsable (considéré comme le plus bas).
+    """
+    if not rank:
+        return -1
+
+    tier = rank.upper()
+
+    if tier not in RANK_TIERS:
+        return -1
+
+    return RANK_TIERS.index(tier)
+
+async def update_rank(interaction: discord.Interaction, member: discord.Member, allow_downgrade: bool = True):
     data = load_data()
     member_id = str(member.id)
 
@@ -45,6 +65,16 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member):
 
     role_id = data.get(f"tft_rank_{current_rank}_role_id")
     role = interaction.guild.get_role(role_id)
+
+    if not allow_downgrade and rank_value(current_rank) < rank_value(old_rank):
+        if role not in member.roles:
+            try:
+                await member.add_roles(role)
+            except discord.Forbidden:
+                return "Le rôle est trop haut dans la hiérarchie.", False
+            except discord.HTTPException as e:
+                return f"Erreur lors de l'ajout du rôle : {e}", False
+        return f"<@{member.id}> : rang en baisse ignoré (conservé : {old_rank}).", False
 
     if current_rank != old_rank:
         data["riot_links"][member_id]["tft_rank"] = current_rank
@@ -126,7 +156,7 @@ def setup(bot):
             nonlocal updated_count, changed_count, errors, done
             async with semaphore:
                 try:
-                    _, changed = await update_rank(interaction, member)
+                    _, changed = await update_rank(interaction, member, allow_downgrade=False)
                     updated_count += 1
                     if changed:
                         changed_count += 1
@@ -176,7 +206,7 @@ def setup(bot):
                 nonlocal updated_count, changed_count, errors
                 async with semaphore:
                     try:
-                        _, changed = await update_rank(fake_interaction, member)
+                        _, changed = await update_rank(fake_interaction, member, allow_downgrade=False)
                         updated_count += 1
                         if changed:
                             changed_count += 1
