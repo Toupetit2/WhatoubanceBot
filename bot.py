@@ -11,6 +11,7 @@ from commands.delete_rank import DeleteRankView
 from discordAPI import DiscordAPI
 from twitchBot import TwitchBot
 from twitchVerify import TwitchLinker
+from in_club import start_daily_club_check
 import traceback
 
 GUILD_ID = int(os.getenv("GUILD_ID"))
@@ -59,6 +60,8 @@ class Bot(commands.Bot):
         if self.background_task is None or self.background_task.done():
             self.background_task = asyncio.create_task(self.stream_check_loop())
             print("INFO - Background task for stream checking started.", flush=True)
+    
+        await start_daily_club_check(self)
 
         self.add_view(LinkView(self.discord_api, self.twitch_linker))
         self.add_view(UpdateRankView())
