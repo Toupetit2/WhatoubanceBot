@@ -222,7 +222,7 @@ def setup(bot):
         await asyncio.gather(*(process(m) for m in members))
 
         print(
-            f"[auto_update_rank] {guild.name} : {updated_count} succès "
+            f"[auto_update_rank] : {updated_count} succès "
             f"({changed_count} changé(s)), {errors} erreur(s) sur {total} membres.",
             flush=True
         )
