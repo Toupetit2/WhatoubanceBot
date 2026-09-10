@@ -8,12 +8,13 @@ class DeleteRankView(discord.ui.View):
 
     @discord.ui.button(label="❌ Supprime ton rank", style=discord.ButtonStyle.gray, custom_id="DeleteRankView")
     async def delete_rank_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        interaction.response.defer(ephemeral=True)
         try:
             data = load_data()
             user_key = str(interaction.user.id)
 
             if "riot_links" not in data or user_key not in data["riot_links"]:
-                await interaction.response.send_message("Aucune donnée de rank trouvée pour toi.", ephemeral=True)
+                await interaction.followup.send("Aucune donnée de rank trouvée pour toi.", ephemeral=True)
                 return
 
             current_rank = data["riot_links"][user_key].get("tft_rank")
@@ -28,7 +29,7 @@ class DeleteRankView(discord.ui.View):
                     if role and role in interaction.user.roles:
                         await interaction.user.remove_roles(role, reason="Suppression des données de rank via bouton")
 
-            await interaction.response.send_message("Toutes les informations collectées ont été supprimées, et ton rôle de rank a été retiré.", ephemeral=True)
+            await interaction.followup.send("Toutes les informations collectées ont été supprimées, et ton rôle de rank a été retiré.", ephemeral=True)
 
         except Exception as e:
             print(f"[DeleteRankView] Erreur : {e}")

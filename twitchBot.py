@@ -3,8 +3,8 @@ import dotenv
 import discord
 from twitchAPI import TwitchAPI
 from discordAPI import DiscordAPI
-import json
 import utils.jsonStorage
+import time
 
 class TwitchBot:
     def __init__(self):
@@ -42,6 +42,8 @@ class TwitchBot:
         if stream is not None:
             image_url = stream["thumbnail_url"]
             image_url = image_url.replace("{width}", "640").replace("{height}", "360")
+            
+            image_url = f"{image_url}?t={int(time.time())}"
 
             embed = discord.Embed(title=stream["title"],
                     url=f"https://twitch.tv/{stream['user_login']}",

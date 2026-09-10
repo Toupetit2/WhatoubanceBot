@@ -113,9 +113,10 @@ class UpdateRankView(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(label="🔄 Update ton rank", style=discord.ButtonStyle.gray, custom_id="UpdateRankView")
-    async def rename_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def update_rank_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        interaction.response.defer(ephemeral=True)
         message, _ = await update_rank(interaction, interaction.user)
-        await interaction.response.send_message(message, ephemeral=True)
+        await interaction.followup.send(message, ephemeral=True)
 
 def setup(bot):
     @app_commands.guild_only()
@@ -123,8 +124,9 @@ def setup(bot):
     @bot.tree.command(name="update_rank", description="Met a jour le rank du membre choisi")
     @app_commands.describe(member="Le membre qui va avoir son rank mis a jour")
     async def update_rank_command(interaction: discord.Interaction, member: discord.Member):
+        interaction.response.defer(ephemeral=True)
         message, _ = await update_rank(interaction, member)
-        await interaction.response.send_message(message, ephemeral=True)
+        await interaction.followup.send(message, ephemeral=True)
 
 
     @app_commands.guild_only()
