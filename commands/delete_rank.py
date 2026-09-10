@@ -8,7 +8,7 @@ class DeleteRankView(discord.ui.View):
 
     @discord.ui.button(label="❌ Supprime ton rank", style=discord.ButtonStyle.gray, custom_id="DeleteRankView")
     async def delete_rank_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
         try:
             data = load_data()
             user_key = str(interaction.user.id)

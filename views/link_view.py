@@ -17,7 +17,7 @@ class LinkView(discord.ui.View):
     
     @discord.ui.button(label="🏆 Lier compte Riot", style=discord.ButtonStyle.gray, custom_id="riot_link_button") 
     async def riot_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
-        interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
         discord_id = str(interaction.user.id) 
 
         redirect_uri = 'https://bot.whatoubance.fr/oauth/callback'
@@ -26,14 +26,14 @@ class LinkView(discord.ui.View):
 
     @discord.ui.button(label="📀 Lier compte Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_link_button") 
     async def twitch_link_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
-        interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
         discord_id = str(interaction.user.id) 
         auth_url = self.twitch_linker.get_auth_url(discord_id) 
         await interaction.followup.send( f"👉 [Clique ici pour lier ton compte Twitch]({auth_url})", ephemeral=True, suppress_embeds=True) 
 
     @discord.ui.button(label="🔔 Notifs Twitch", style=discord.ButtonStyle.gray, custom_id="twitch_notification_button") 
     async def twitch_notification_button(self, interaction: discord.Interaction, button: discord.ui.Button): 
-        interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
         data = load_data()
         role = interaction.guild.get_role(data["twitch_notification_role"])
         
