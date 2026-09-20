@@ -70,9 +70,10 @@ async def update_rank(interaction: discord.Interaction, member: discord.Member, 
     role = interaction.guild.get_role(role_id)
 
     if not allow_downgrade and rank_value(current_rank) < rank_value(old_rank):
-        if role not in member.roles:
+        old_role = interaction.guild.get_role(data.get(f"tft_rank_{old_rank}_role_id"))
+        if old_role and old_role not in member.roles:
             try:
-                await member.add_roles(role)
+                await member.add_roles(old_role)
             except discord.Forbidden:
                 return "Le rôle est trop haut dans la hiérarchie.", False
             except discord.HTTPException as e:
