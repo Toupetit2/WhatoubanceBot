@@ -18,7 +18,7 @@ from utils.jsonStorage import load_data
 from dotenv import load_dotenv
 load_dotenv()
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+DISCORD_TOKEN = os.getenv("TOKEN_DISCORD")
 GUILD_ID = int(os.getenv("GUILD_ID"))
 
 RANK_TIERS = [
