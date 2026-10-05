@@ -39,6 +39,10 @@ class Bot(commands.Bot):
         synced = await self.tree.sync()
         print(f"INFO - Synchronized commands: {[cmd.name for cmd in synced]}")
 
+        self.add_view(LinkView(self.discord_api, self.twitch_linker))
+        self.add_view(UpdateRankView())
+        self.add_view(DeleteRankView())
+
         if self.link_view_manager is not None:
             await self.link_view_manager.init()
 
@@ -61,11 +65,7 @@ class Bot(commands.Bot):
             self.background_task = asyncio.create_task(self.stream_check_loop())
             print("INFO - Background task for stream checking started.", flush=True)
     
-        await start_daily_club_check(self)
-
-        self.add_view(LinkView(self.discord_api, self.twitch_linker))
-        self.add_view(UpdateRankView())
-        self.add_view(DeleteRankView())
+        start_daily_club_check(self)
 
     
     async def on_message(self, message):
